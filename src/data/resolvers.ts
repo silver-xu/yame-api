@@ -13,11 +13,11 @@ export const resolvers = {
         async docRepo() {
             return await getDocRepoForUser(mockUser.userId);
         },
-        async oneOffKey() {
-            return await uuidv4();
+        oneOffKey() {
+            return uuidv4();
         },
-        async currentUser() {
-            return await Promise.resolve(mockUser);
+        currentUser() {
+            return mockUser;
         },
         async defaultDoc() {
             return await getDefaultDoc();

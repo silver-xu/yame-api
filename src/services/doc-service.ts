@@ -1,17 +1,19 @@
 import {
     IDefaultDoc,
-    IDocRepo,
-    IDocRepoFile,
     IDoc,
+    IDocRepo,
+    IDocRepoFile as IDocRepoMetaData,
     IDocRepoMutation
 } from '../types';
 import {
+    deleteObjectFromS3,
     getObjectFromS3,
     listKeysFromS3,
-    putObjectToS3,
-    deleteObjectFromS3
+    putObjectToS3
 } from '../utils/s3';
-const lzjs = require('lzjs');
+
+import { decodeAndDecompress, encodeAndCompress } from '..//utils/encoding';
+
 const bucket = 'yame-dev';
 
 export const getDefaultDoc = async (): Promise<IDefaultDoc> => {
@@ -21,22 +23,23 @@ export const getDefaultDoc = async (): Promise<IDefaultDoc> => {
     );
     return {
         ...compressedDefaultDoc,
-        defaultContent: lzjs.decompress(compressedDefaultDoc.defaultContent)
+        defaultContent: decodeAndDecompress(compressedDefaultDoc.defaultContent)
     };
 };
 
 export const getDocRepoForUser = async (userId: string): Promise<IDocRepo> => {
-    const keys = await listKeysFromS3(bucket, userId);
-    const docRepoRecord = await getObjectFromS3<IDocRepoFile>(
+    const keys = await listKeysFromS3(bucket, `${userId}/docs/`);
+    const docRepoMetaData = await getObjectFromS3<IDocRepoMetaData>(
         bucket,
-        `${userId}/repo.json`
+        `${userId}/meta.json`
     );
+    console.log(keys);
 
-    const docs = await Promise.all(keys.map(key => getDocForUser(userId, key)));
+    const docs = await Promise.all(keys.map(key => getDocForUserByKey(key)));
 
     return {
         docs,
-        currentDocId: docRepoRecord.currentDocId
+        currentDocId: docRepoMetaData.currentDocId
     };
 };
 
@@ -70,11 +73,19 @@ export const mutateDocRepoForUser = async (
 const getDocForUser = async (userId: string, docId: string): Promise<IDoc> => {
     const compressedDoc = await getObjectFromS3<IDoc>(
         bucket,
-        `${userId}/${docId}`
+        `${userId}/${docId}.json`
     );
     return {
         ...compressedDoc,
-        content: lzjs.decompress(compressedDoc.content)
+        content: decodeAndDecompress(compressedDoc.content)
+    };
+};
+
+const getDocForUserByKey = async (key: string): Promise<IDoc> => {
+    const compressedDoc = await getObjectFromS3<IDoc>(bucket, key);
+    return {
+        ...compressedDoc,
+        content: decodeAndDecompress(compressedDoc.content)
     };
 };
 
@@ -82,11 +93,11 @@ const updateDocRepoFileForUser = async (
     userId: string,
     currentDocId: string
 ): Promise<void> => {
-    const docRepoFile: IDocRepoFile = {
+    const docRepoFile: IDocRepoMetaData = {
         currentDocId
     };
 
-    await putObjectToS3(bucket, `${userId}/`, docRepoFile);
+    await putObjectToS3(bucket, `${userId}/meta.json`, docRepoFile);
 };
 
 const addOrUpdateDocsForUser = async (
@@ -94,12 +105,12 @@ const addOrUpdateDocsForUser = async (
     docs: IDoc[]
 ): Promise<void> => {
     const compressedDocs = docs.map(doc => {
-        return { ...doc, content: lzjs.compress(doc.content) };
+        return { ...doc, content: encodeAndCompress(doc.content) };
     });
 
     await Promise.all(
         compressedDocs.map(doc => {
-            putObjectToS3(bucket, `${userId}/${doc.id}`, doc);
+            putObjectToS3(bucket, `${userId}/${doc.id}.json`, doc);
         })
     );
 };
@@ -110,7 +121,7 @@ const deleteDocsForUser = async (
 ): Promise<void> => {
     await Promise.all(
         docsIds.map(docId => {
-            deleteObjectFromS3(bucket, `${userId}/${docId}`);
+            deleteObjectFromS3(bucket, `${userId}/${docId}.json`);
         })
     );
 };

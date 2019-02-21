@@ -26,8 +26,9 @@ export const listKeysFromS3 = async (
             Prefix: prefix
         })
         .promise();
-
-    return response.Contents.map(content => content.Key);
+    return response.Contents.filter(content => !content.Key.endsWith('/')).map(
+        content => content.Key
+    );
 };
 
 export const putObjectToS3 = async (
