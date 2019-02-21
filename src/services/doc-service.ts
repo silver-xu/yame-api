@@ -33,7 +33,6 @@ export const getDocRepoForUser = async (userId: string): Promise<IDocRepo> => {
         bucket,
         `${userId}/meta.json`
     );
-    console.log(keys);
 
     const docs = await Promise.all(keys.map(key => getDocForUserByKey(key)));
 
