@@ -10,7 +10,18 @@ export interface IDocRepo {
     currentDocId: string;
 }
 
+export interface IDocRepoFile {
+    currentDocId: string;
+}
+
 export interface IDefaultDoc {
     namePrefix: string;
     defaultContent: string;
+}
+
+export interface IDocRepoMutation {
+    newDocs?: IDoc[];
+    updatedDocs?: IDoc[];
+    deletedDocIds?: string[];
+    currentDocId?: string;
 }

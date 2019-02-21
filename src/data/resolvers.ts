@@ -1,39 +1,26 @@
 import { GraphQLDateTime } from 'graphql-iso-date';
 import uuidv4 from 'uuid/v4';
-import { IDocRepo } from '../types';
+import { getDefaultDoc, getDocRepoForUser } from '../services/doc-service';
 
-const mockDocRepo: IDocRepo = {
-    docs: [
-        {
-            id: 'd61af891-13c8-4eeb-b767-d5d7425b59d2',
-            docName: 'Mock Doc',
-            content: 'Mock Content',
-            lastModified: new Date()
-        }
-    ],
-    currentDocId: 'Mock 1'
+const mockUser = {
+    userId: 'a6624091-4237-4376-8a88-5e34424c95c6',
+    email: 'foo@bar.com'
 };
 
 export const resolvers = {
     DateTime: GraphQLDateTime,
     Query: {
-        docRepo() {
-            return mockDocRepo;
+        async docRepo() {
+            return await getDocRepoForUser(mockUser.userId);
         },
-        oneOffKey() {
-            return uuidv4();
+        async oneOffKey() {
+            return await uuidv4();
         },
-        currentUser() {
-            return {
-                userId: 'a6624091-4237-4376-8a88-5e34424c95c6',
-                email: 'foo@bar.com'
-            };
+        async currentUser() {
+            return await Promise.resolve(mockUser);
         },
-        defaultDoc() {
-            return {
-                namePrefix: 'My document',
-                defaultContent: 'Sample Content'
-            };
+        async defaultDoc() {
+            return await getDefaultDoc();
         }
     }
 };
