@@ -36,13 +36,16 @@ export const putObjectToS3 = async (
     key: string,
     obj: any
 ): Promise<void> => {
+    const body = JSON.stringify(obj);
     await s3
         .putObject({
             Bucket: bucket,
             Key: key,
-            Body: JSON.stringify(obj)
+            Body: body
         })
         .promise();
+
+    console.log(`${bucket}/${key} uploaded`);
 };
 
 export const deleteObjectFromS3 = async (
@@ -55,4 +58,6 @@ export const deleteObjectFromS3 = async (
             Key: key
         })
         .promise();
+
+    console.log(`${bucket}/${key} deleted`);
 };

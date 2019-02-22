@@ -11,6 +11,10 @@ type Query {
   defaultDoc: DefaultDoc
 }
 
+type Mutation {
+  updateDocRepo(docRepoMutation: DocRepoMutation): Boolean
+}
+
 type DocRepo {
   docs: [Doc]
 }
@@ -31,6 +35,21 @@ type User {
   userId: String
   email: String
 }
+
+input DocRepoMutation{
+  newDocs: [DocMutation!]
+  updatedDocs: [DocMutation!]
+  deletedDocIds: [String!]
+  currentDocId: String
+}
+
+input DocMutation{
+  id: String
+  docName: String
+  content: String
+  lastModified: DateTime
+}
+
 `;
 
 const schema = makeExecutableSchema({ typeDefs, resolvers });

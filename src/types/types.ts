@@ -20,8 +20,8 @@ export interface IDefaultDoc {
 }
 
 export interface IDocRepoMutation {
-    newDocs?: IDoc[];
-    updatedDocs?: IDoc[];
-    deletedDocIds?: string[];
+    newDocs: IDoc[];
+    updatedDocs: IDoc[];
+    deletedDocIds: string[];
     currentDocId?: string;
 }
