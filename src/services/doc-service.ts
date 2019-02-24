@@ -1,10 +1,4 @@
-import {
-    IDefaultDoc,
-    IDoc,
-    IDocRepo,
-    IDocRepoFile as IDocRepoMetaData,
-    IDocRepoMutation
-} from '../types';
+import { IDefaultDoc, IDoc, IDocRepo, IDocRepoMutation } from '../types';
 import {
     deleteObjectFromS3,
     getObjectFromS3,
@@ -27,16 +21,10 @@ export const getDefaultDoc = async (): Promise<IDefaultDoc> => {
 
 export const getDocRepoForUser = async (userId: string): Promise<IDocRepo> => {
     const keys = await listKeysFromS3(bucket, `${userId}/docs/`);
-    const docRepoMetaData = await getObjectFromS3<IDocRepoMetaData>(
-        bucket,
-        `${userId}/meta.json`
-    );
-
     const docs = await Promise.all(keys.map(key => getDocForUserByKey(key)));
 
     return {
-        docs,
-        currentDocId: docRepoMetaData.currentDocId
+        docs
     };
 };
 
@@ -54,15 +42,7 @@ export const mutateDocRepoForUser = async (
         docRepoMutation.deletedDocIds
     );
 
-    const updateDocRepoFileTask = docRepoMutation.currentDocId
-        ? updateDocRepoFileForUser(userId, docRepoMutation.currentDocId)
-        : undefined;
-
-    await Promise.all([
-        newAndUpdateDocsTask,
-        deleteDocsTask,
-        updateDocRepoFileTask
-    ]);
+    await Promise.all([newAndUpdateDocsTask, deleteDocsTask]);
 };
 
 const getDocForUser = async (userId: string, docId: string): Promise<IDoc> => {
@@ -79,17 +59,6 @@ const getDocForUserByKey = async (key: string): Promise<IDoc> => {
         ...doc,
         content: doc.content
     };
-};
-
-const updateDocRepoFileForUser = async (
-    userId: string,
-    currentDocId: string
-): Promise<void> => {
-    const docRepoFile: IDocRepoMetaData = {
-        currentDocId
-    };
-
-    await putObjectToS3(bucket, `${userId}/meta.json`, docRepoFile);
 };
 
 const addOrUpdateDocsForUser = async (

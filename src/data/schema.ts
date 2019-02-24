@@ -32,15 +32,14 @@ type Doc {
 }
 
 type User {
-  userId: String
-  email: String
+  userId: String!
+  userType: UserType
 }
 
 input DocRepoMutation{
   newDocs: [DocMutation!]
   updatedDocs: [DocMutation!]
   deletedDocIds: [String!]
-  currentDocId: String
 }
 
 input DocMutation{
@@ -48,6 +47,11 @@ input DocMutation{
   docName: String
   content: String
   lastModified: DateTime
+}
+
+enum UserType {
+  Anonymous
+  Facebook
 }
 
 `;

@@ -9,7 +9,7 @@ import { IDocRepoMutation } from '../types';
 
 const mockUser = {
     userId: 'a6624091-4237-4376-8a88-5e34424c95c6',
-    email: 'foo@bar.com'
+    isAnonymous: true
 };
 
 export const resolvers = {

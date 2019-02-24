@@ -7,11 +7,6 @@ export interface IDoc {
 
 export interface IDocRepo {
     docs: IDoc[];
-    currentDocId: string;
-}
-
-export interface IDocRepoFile {
-    currentDocId: string;
 }
 
 export interface IDefaultDoc {
@@ -19,9 +14,25 @@ export interface IDefaultDoc {
     defaultContent: string;
 }
 
+export interface IUser {
+    userId: string;
+    type: UserType;
+}
+
+export enum UserType {
+    Anonymous = 'Anonymous',
+    Facebook = 'FB'
+}
+
 export interface IDocRepoMutation {
     newDocs: IDoc[];
     updatedDocs: IDoc[];
     deletedDocIds: string[];
-    currentDocId?: string;
+}
+
+export interface IFacebookAuthResponse {
+    isValid: boolean;
+    userId: string;
+    expiryDate: Date;
+    username: string;
 }
