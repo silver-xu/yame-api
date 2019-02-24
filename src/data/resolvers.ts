@@ -5,26 +5,28 @@ import {
     getDocRepoForUser,
     mutateDocRepoForUser
 } from '../services/doc-service';
-import { IDocRepoMutation } from '../types';
+import { IDocRepoMutation, UserType } from '../types';
 
 const mockUser = {
     userId: 'a6624091-4237-4376-8a88-5e34424c95c6',
-    isAnonymous: true
+    userType: UserType.Anonymous,
+    authToken: uuidv4(),
+    userName: 'Silver Xu'
 };
 
 export const resolvers = {
     DateTime: GraphQLDateTime,
     Query: {
-        async docRepo() {
+        async docRepo(_: any, args: any, context: any) {
             return await getDocRepoForUser(mockUser.userId);
         },
-        oneOffKey() {
+        oneOffKey(_: any, args: any, context: any) {
             return uuidv4();
         },
-        currentUser() {
+        currentUser(_: any, args: any, context: any) {
             return mockUser;
         },
-        async defaultDoc() {
+        async defaultDoc(_: any, args: any, context: any) {
             return await getDefaultDoc();
         }
     },

@@ -9,7 +9,15 @@ const graphQLServer = express();
 
 graphQLServer.use(cors());
 
-graphQLServer.use('/graphql', bodyParser.json(), graphqlExpress({ schema }));
+graphQLServer.use(
+    '/graphql',
+    bodyParser.json(),
+    graphqlExpress(request => ({
+        schema,
+        context: { authToken: request.headers.authorization || '' }
+    }))
+);
+
 graphQLServer.use(
     '/graphiql',
     graphiqlExpress({

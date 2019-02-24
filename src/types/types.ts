@@ -15,8 +15,10 @@ export interface IDefaultDoc {
 }
 
 export interface IUser {
+    authToken: string;
     userId: string;
-    type: UserType;
+    username: string;
+    userType: UserType;
 }
 
 export enum UserType {

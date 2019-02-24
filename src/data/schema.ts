@@ -32,8 +32,10 @@ type Doc {
 }
 
 type User {
+  userType: UserType!
+  authToken: String!
   userId: String!
-  userType: UserType
+  userName: String!
 }
 
 input DocRepoMutation{
