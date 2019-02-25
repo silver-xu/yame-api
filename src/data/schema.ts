@@ -34,7 +34,7 @@ type Doc {
 type User {
   userType: UserType!
   authToken: String!
-  userId: String!
+  id: String!
   userName: String!
 }
 

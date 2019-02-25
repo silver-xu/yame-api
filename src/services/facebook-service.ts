@@ -45,7 +45,7 @@ const getUserFromAuthtoken = async (
 
     return {
         isValid: tokenDataResponse.data.is_valid,
-        userId: tokenDataResponse.data.user_id,
+        id: tokenDataResponse.data.user_id,
         expiryDate: new Date(tokenDataResponse.data.expires_at * 1000),
         username: userDataResponse.name
     };

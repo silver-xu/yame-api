@@ -19,8 +19,8 @@ export const getDefaultDoc = async (): Promise<IDefaultDoc> => {
     };
 };
 
-export const getDocRepoForUser = async (userId: string): Promise<IDocRepo> => {
-    const keys = await listKeysFromS3(bucket, `${userId}/docs/`);
+export const getDocRepoForUser = async (id: string): Promise<IDocRepo> => {
+    const keys = await listKeysFromS3(bucket, `${id}/docs/`);
     const docs = await Promise.all(keys.map(key => getDocForUserByKey(key)));
 
     return {
@@ -29,24 +29,21 @@ export const getDocRepoForUser = async (userId: string): Promise<IDocRepo> => {
 };
 
 export const mutateDocRepoForUser = async (
-    userId: string,
+    id: string,
     docRepoMutation: IDocRepoMutation
 ): Promise<void> => {
-    const newAndUpdateDocsTask = addOrUpdateDocsForUser(userId, [
+    const newAndUpdateDocsTask = addOrUpdateDocsForUser(id, [
         ...docRepoMutation.newDocs,
         ...docRepoMutation.updatedDocs
     ]);
 
-    const deleteDocsTask = deleteDocsForUser(
-        userId,
-        docRepoMutation.deletedDocIds
-    );
+    const deleteDocsTask = deleteDocsForUser(id, docRepoMutation.deletedDocIds);
 
     await Promise.all([newAndUpdateDocsTask, deleteDocsTask]);
 };
 
-const getDocForUser = async (userId: string, docId: string): Promise<IDoc> => {
-    const doc = await getObjectFromS3<IDoc>(bucket, `${userId}/${docId}.json`);
+const getDocForUser = async (id: string, docId: string): Promise<IDoc> => {
+    const doc = await getObjectFromS3<IDoc>(bucket, `${id}/${docId}.json`);
     return {
         ...doc,
         content: doc.content
@@ -62,23 +59,23 @@ const getDocForUserByKey = async (key: string): Promise<IDoc> => {
 };
 
 const addOrUpdateDocsForUser = async (
-    userId: string,
+    id: string,
     docs: IDoc[]
 ): Promise<void> => {
     await Promise.all(
         docs.map(doc => {
-            putObjectToS3(bucket, `${userId}/docs/${doc.id}.json`, doc);
+            putObjectToS3(bucket, `${id}/docs/${doc.id}.json`, doc);
         })
     );
 };
 
 const deleteDocsForUser = async (
-    userId: string,
+    id: string,
     docsIds: string[]
 ): Promise<void> => {
     await Promise.all(
         docsIds.map(docId => {
-            deleteObjectFromS3(bucket, `${userId}/docs/${docId}.json`);
+            deleteObjectFromS3(bucket, `${id}/docs/${docId}.json`);
         })
     );
 };

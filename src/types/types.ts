@@ -16,7 +16,7 @@ export interface IDefaultDoc {
 
 export interface IUser {
     authToken: string;
-    userId: string;
+    id: string;
     username: string;
     userType: UserType;
 }
@@ -34,7 +34,7 @@ export interface IDocRepoMutation {
 
 export interface IFacebookAuthResponse {
     isValid: boolean;
-    userId: string;
+    id: string;
     expiryDate: Date;
     username: string;
 }

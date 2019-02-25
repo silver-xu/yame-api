@@ -42,14 +42,14 @@ export const resolvers = {
     Query: {
         async docRepo(_: any, args: any, context: any) {
             return !MOCK_MODE
-                ? await getDocRepoForUser(mockUser.userId)
+                ? await getDocRepoForUser(context.user.id)
                 : Promise.resolve(mockDocRepo);
         },
         oneOffKey(_: any, args: any, context: any) {
             return uuidv4();
         },
         currentUser(_: any, args: any, context: any) {
-            return mockUser;
+            return context.user;
         },
         async defaultDoc(_: any, args: any, context: any) {
             return !MOCK_MODE
