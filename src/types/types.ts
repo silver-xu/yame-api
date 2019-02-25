@@ -23,7 +23,7 @@ export interface IUser {
 
 export enum UserType {
     Anonymous = 'Anonymous',
-    Facebook = 'FB'
+    Facebook = 'Facebook'
 }
 
 export interface IDocRepoMutation {

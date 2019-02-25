@@ -30,13 +30,6 @@ const mockDefaultDoc = {
     defaultContent: 'defualtContent'
 };
 
-const mockUser = {
-    userId: 'a6624091-4237-4376-8a88-5e34424c95c6',
-    userType: UserType.Anonymous,
-    authToken: uuidv4(),
-    userName: 'Silver Xu'
-};
-
 export const resolvers = {
     DateTime: GraphQLDateTime,
     Query: {
@@ -60,10 +53,11 @@ export const resolvers = {
     Mutation: {
         async updateDocRepo(
             _: any,
-            { docRepoMutation }: { docRepoMutation: IDocRepoMutation }
+            { docRepoMutation }: { docRepoMutation: IDocRepoMutation },
+            context: any
         ): Promise<boolean> {
             try {
-                await mutateDocRepoForUser(mockUser.userId, docRepoMutation);
+                await mutateDocRepoForUser(context.user.id, docRepoMutation);
                 return true;
             } catch (error) {
                 console.log(error);

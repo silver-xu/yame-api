@@ -21,11 +21,10 @@ const server = new ApolloServer({
         // try to retrieve a user with the token
         const mockUser = {
             id: 'a6624091-4237-4376-8a88-5e34424c95c6',
-            userType: UserType.Anonymous,
+            userType: UserType.Facebook,
             authToken: uuidv4(),
             userName: 'Silver Xu'
         };
-
         // add the user to the context
         return { user: mockUser };
     }
