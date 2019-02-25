@@ -7,6 +7,29 @@ import {
 } from '../services/doc-service';
 import { IDocRepoMutation, UserType } from '../types';
 
+const MOCK_MODE = true;
+const mockDocRepo = {
+    docs: [
+        {
+            id: 'test 1',
+            docName: 'test 1 name',
+            content: 'test 1 content',
+            lastModified: new Date()
+        },
+        {
+            id: 'test 2',
+            docName: 'test 2 name',
+            content: 'test 2 content',
+            lastModified: new Date()
+        }
+    ]
+};
+
+const mockDefaultDoc = {
+    namePrefix: 'My document',
+    defaultContent: 'defualtContent'
+};
+
 const mockUser = {
     userId: 'a6624091-4237-4376-8a88-5e34424c95c6',
     userType: UserType.Anonymous,
@@ -18,7 +41,9 @@ export const resolvers = {
     DateTime: GraphQLDateTime,
     Query: {
         async docRepo(_: any, args: any, context: any) {
-            return await getDocRepoForUser(mockUser.userId);
+            return !MOCK_MODE
+                ? await getDocRepoForUser(mockUser.userId)
+                : Promise.resolve(mockDocRepo);
         },
         oneOffKey(_: any, args: any, context: any) {
             return uuidv4();
@@ -27,7 +52,9 @@ export const resolvers = {
             return mockUser;
         },
         async defaultDoc(_: any, args: any, context: any) {
-            return await getDefaultDoc();
+            return !MOCK_MODE
+                ? await getDefaultDoc()
+                : Promise.resolve(mockDefaultDoc);
         }
     },
     Mutation: {
