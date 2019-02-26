@@ -1,3 +1,4 @@
+import fetch from 'node-fetch';
 import { IFacebookAuthResponse } from '../types';
 import { getFetchUrl } from '../utils/get-fetch-url';
 
@@ -8,7 +9,7 @@ const FB_INSPECT_TOKEN_URL = 'https://graph.facebook.com/debug_token';
 const FB_GRAPHAPI_URL =
     'https://graph.facebook.com/v3.2//?access_token=EAAEsSH2qUvYBAFBNQrWcTyhngiWYtIvJbvdTMgx5PwL8LJl01gfbrSoN6ZCPWElU4soRwZA3EeT3Di1PqXCc0PGQRsyFwpLt9puTEm0WRicTmcM4hvy103VpwPnNOwZAqeTQ7Tpu5ZCOgGgcVpNiTZATTyaPtYVwtalrCWmSgsZBzoC06QEsDXPsg9QOzj3E0ZD"';
 
-const obtainAppToken = async () => {
+export const obtainAppToken = async () => {
     const params = {
         client_id: APP_ID,
         client_secret: APP_SECRET,
@@ -16,12 +17,13 @@ const obtainAppToken = async () => {
     };
 
     const response = await fetch(getFetchUrl(FB_ACCESS_TOKEN_URL, params));
+    console.log(response);
     const responseData = JSON.parse(await response.json());
 
     return responseData.access_token;
 };
 
-const getUserFromAuthtoken = async (
+export const getUserFromAuthtoken = async (
     authToken: string,
     appToken: string
 ): Promise<IFacebookAuthResponse> => {
