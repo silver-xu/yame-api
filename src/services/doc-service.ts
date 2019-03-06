@@ -1,3 +1,4 @@
+import uuidv4 from 'uuid';
 import { IDefaultDoc, IDoc, IDocRepo, IDocRepoMutation } from '../types';
 import {
     deleteObjectFromS3,
@@ -9,18 +10,33 @@ import {
 const bucket = 'yame-dev';
 
 export const getDefaultDoc = async (): Promise<IDefaultDoc> => {
-    const compressedDefaultDoc = await getObjectFromS3<IDefaultDoc>(
+    const defaultDoc = await getObjectFromS3<IDefaultDoc>(
         bucket,
         'default.json'
     );
     return {
-        ...compressedDefaultDoc,
-        defaultContent: compressedDefaultDoc.defaultContent
+        ...defaultDoc,
+        defaultContent: defaultDoc.defaultContent
     };
 };
 
 export const getDocRepoForUser = async (id: string): Promise<IDocRepo> => {
-    const keys = await listKeysFromS3(bucket, `${id}/docs/`);
+    let keys = await listKeysFromS3(bucket, `${id}/docs/`);
+
+    // initialize Docs for new user
+    if (!keys || keys.length === 0) {
+        const defaultDock = await getDefaultDoc();
+        await addOrUpdateDocsForUser(id, [
+            {
+                id: uuidv4(),
+                docName: `${defaultDock.namePrefix} 1`,
+                content: defaultDock.defaultContent,
+                lastModified: new Date()
+            }
+        ]);
+        keys = await listKeysFromS3(bucket, `${id}/docs/`);
+    }
+    console.log(keys);
     const docs = await Promise.all(keys.map(key => getDocForUserByKey(key)));
 
     return {

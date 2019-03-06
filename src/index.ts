@@ -4,10 +4,7 @@ import express from 'express';
 import uuidv4 from 'uuid/v4';
 import { resolvers } from './data/resolvers';
 import schema from './data/schema';
-import {
-    getUserFromAuthtoken,
-    obtainAppToken
-} from './services/facebook-service';
+import { inspectUser, obtainAppToken } from './services/facebook-service';
 import { UserType } from './types';
 
 (async () => {
@@ -16,37 +13,33 @@ import { UserType } from './types';
     const app = express();
     app.use(cors());
 
-    const fbAppToken = await obtainAppToken();
+    const fbAppAccessToken = await obtainAppToken();
+
     const server = new ApolloServer({
         schema,
         resolvers,
         context: async ({ req }) => {
-            // get the user token from the headers
             const token = req.headers.authorization || '';
-
             if (token === '') {
                 const authToken = uuidv4();
                 const firstTimeAnonymousUser = {
                     id: authToken,
                     userType: UserType.Anonymous,
-                    authToken,
-                    userName: 'Anonymous'
+                    authToken
                 };
-                console.log(firstTimeAnonymousUser);
-
                 return { user: firstTimeAnonymousUser };
             } else if (token.startsWith('fb-')) {
                 const authToken = token.substring(3);
-                const facebookAuthResponse = await getUserFromAuthtoken(
+
+                const facebookAuthResponse = await inspectUser(
                     authToken,
-                    fbAppToken
+                    fbAppAccessToken
                 );
 
                 const facebookUser = {
                     id: facebookAuthResponse.id,
                     userType: UserType.Facebook,
-                    authToken,
-                    userName: facebookAuthResponse.username
+                    authToken
                 };
 
                 return { user: facebookUser };
@@ -54,10 +47,8 @@ import { UserType } from './types';
                 const repeatingAnonymousUser = {
                     id: token,
                     userType: UserType.Anonymous,
-                    authToken: token,
-                    userName: 'Anonymous'
+                    authToken: token
                 };
-
                 return { user: repeatingAnonymousUser };
             }
         }

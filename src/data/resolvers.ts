@@ -5,9 +5,9 @@ import {
     getDocRepoForUser,
     mutateDocRepoForUser
 } from '../services/doc-service';
-import { IDocRepoMutation, UserType } from '../types';
+import { IDocRepoMutation } from '../types';
 
-const MOCK_MODE = true;
+const MOCK_MODE = false;
 const mockDocRepo = {
     docs: [
         {
