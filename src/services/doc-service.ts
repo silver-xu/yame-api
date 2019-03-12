@@ -58,7 +58,10 @@ export const mutateDocRepoForUser = async (
     await Promise.all([newAndUpdateDocsTask, deleteDocsTask]);
 };
 
-const getDocForUser = async (id: string, docId: string): Promise<IDoc> => {
+export const getDocForUser = async (
+    id: string,
+    docId: string
+): Promise<IDoc> => {
     const doc = await getObjectFromS3<IDoc>(bucket, `${id}/${docId}.json`);
     return {
         ...doc,

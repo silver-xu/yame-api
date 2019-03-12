@@ -2,12 +2,13 @@ import { GraphQLDateTime } from 'graphql-iso-date';
 import uuidv4 from 'uuid/v4';
 import {
     getDefaultDoc,
+    getDocForUser,
     getDocRepoForUser,
     mutateDocRepoForUser
 } from '../services/doc-service';
 import { IDocRepoMutation } from '../types';
 
-const MOCK_MODE = false;
+const MOCK_MODE = true;
 const mockDocRepo = {
     docs: [
         {
@@ -25,6 +26,13 @@ const mockDocRepo = {
     ]
 };
 
+const mockDoc = {
+    id: 'test 1',
+    docName: 'test 1 name',
+    content: 'test 1 content',
+    lastModified: new Date()
+};
+
 const mockDefaultDoc = {
     namePrefix: 'My document',
     defaultContent: 'defualtContent'
@@ -37,6 +45,11 @@ export const resolvers = {
             return !MOCK_MODE
                 ? await getDocRepoForUser(context.user.id)
                 : Promise.resolve(mockDocRepo);
+        },
+        async doc(_: any, args: any, context: any) {
+            return !MOCK_MODE
+                ? await getDocForUser(context.user.id, args.docId)
+                : Promise.resolve(mockDoc);
         },
         oneOffKey(_: any, args: any, context: any) {
             return uuidv4();

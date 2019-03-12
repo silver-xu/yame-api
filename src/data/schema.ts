@@ -9,6 +9,7 @@ type Query {
   oneOffKey: String
   currentUser: User
   defaultDoc: DefaultDoc
+  doc(docId:String): Doc
 }
 
 type Mutation {
