@@ -1,0 +1,48 @@
+service: yame-api
+
+provider:
+    name: aws
+    runtime: nodejs8.10
+    stage: ${opt:stage}
+    region: ap-southeast-2
+    environment:
+        DYNAMODB_TABLE: ${self:service}-${self:provider.stage}
+    iamRoleStatements:
+        - Effect: Allow
+          Action:
+              - dynamodb:GetItem
+              - dynamodb:UpdateItem
+          Resource: 'arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/DocumentAccess'
+
+functions:
+    app:
+        handler: src/handler.handler
+        events:
+            - http: ANY /
+            - http: 'ANY {proxy+}'
+
+resources:
+    Resources:
+        NicknamesTable:
+            Type: 'AWS::DynamoDB::Table'
+            Properties:
+                AttributeDefinitions:
+                    - AttributeName: id
+                      AttributeType: S
+                    - AttributeName: permalink
+                      AttributeType: S
+                    - AttributeName: secret
+                      AttributeType: S
+                    - AttributeName: protectType
+                      AttributeType: S
+                    - AttributeName: generatePdf
+                      AttributeType: BOOL
+                    - AttributeName: generateWord
+                      AttributeType: BOOL
+                KeySchema:
+                    - AttributeName: id
+                      KeyType: HASH
+                ProvisionedThroughput:
+                    ReadCapacityUnits: 1
+                    WriteCapacityUnits: 1
+                TableName: DocumentAccess

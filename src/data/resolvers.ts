@@ -29,7 +29,7 @@ const mockDocRepo = {
 const mockDoc = {
     id: 'test 1',
     docName: 'test 1 name',
-    content: 'test 1 content',
+    content: '# Heading 1\r\n## Heading 2\r\n### Heading 3\r\ncontents',
     lastModified: new Date()
 };
 
