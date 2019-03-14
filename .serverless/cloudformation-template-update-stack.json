@@ -125,7 +125,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/yame-api/dev/1552564759015-2019-03-14T11:59:19.015Z/yame-api.zip"
+          "S3Key": "serverless/yame-api/dev/1552603912588-2019-03-14T22:51:52.588Z/yame-api.zip"
         },
         "FunctionName": "yame-api-dev-app",
         "Handler": "dist/handler.handler",
@@ -269,7 +269,7 @@
         "MethodResponses": []
       }
     },
-    "ApiGatewayDeployment1552564759079": {
+    "ApiGatewayDeployment1552603912651": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -334,14 +334,22 @@
       "Properties": {
         "AttributeDefinitions": [
           {
-            "AttributeName": "id",
+            "AttributeName": "permalink",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "userId",
             "AttributeType": "S"
           }
         ],
         "KeySchema": [
           {
-            "AttributeName": "id",
+            "AttributeName": "userId",
             "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "permalink",
+            "KeyType": "RANGE"
           }
         ],
         "ProvisionedThroughput": {
