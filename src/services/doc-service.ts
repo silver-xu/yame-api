@@ -36,7 +36,7 @@ export const getDocRepoForUser = async (id: string): Promise<IDocRepo> => {
         ]);
         keys = await listKeysFromS3(bucket, `${id}/docs/`);
     }
-    console.log(keys);
+
     const docs = await Promise.all(keys.map(key => getDocForUserByKey(key)));
 
     return {
@@ -62,7 +62,9 @@ export const getDocForUser = async (
     id: string,
     docId: string
 ): Promise<IDoc> => {
-    const doc = await getObjectFromS3<IDoc>(bucket, `${id}/${docId}.json`);
+    console.log(docId);
+    const doc = await getObjectFromS3<IDoc>(bucket, `${id}/docs/${docId}.json`);
+
     return {
         ...doc,
         content: doc.content

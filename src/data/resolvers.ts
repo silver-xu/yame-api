@@ -8,7 +8,7 @@ import {
 } from '../services/doc-service';
 import { IDocRepoMutation } from '../types';
 
-const MOCK_MODE = true;
+const MOCK_MODE = false;
 const mockDocRepo = {
     docs: [
         {
@@ -47,6 +47,7 @@ export const resolvers = {
                 : Promise.resolve(mockDocRepo);
         },
         async doc(_: any, args: any, context: any) {
+            console.log(args);
             return !MOCK_MODE
                 ? await getDocForUser(context.user.id, args.docId)
                 : Promise.resolve(mockDoc);

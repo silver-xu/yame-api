@@ -4,7 +4,10 @@ import express from 'express';
 import uuidv4 from 'uuid/v4';
 import { resolvers } from './data/resolvers';
 import schema from './data/schema';
-import { inspectUser, obtainAppToken } from './services/facebook-service';
+import {
+    inspectUser,
+    obtainAppToken
+} from './services/facebook-service';
 import { UserType } from './types';
 
 export const createApp = async () => {
@@ -51,6 +54,8 @@ export const createApp = async () => {
             }
         }
     });
+
+    app.get('/ping', (req, res) => res.send('pong'));
 
     server.applyMiddleware({ app });
 

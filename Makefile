@@ -1,10 +1,14 @@
-STAGE           ?= local
+STAGE           ?= dev
+export STAGE
 
 start: node_modules
 	npm start
 
 node_modules:
 	npm install
+
+build: node_modules
+	npm run build
 
 test: node_modules lint
 	npm test
@@ -15,5 +19,8 @@ lint: node_modules
 fix: node_modules
 	npm run lint:fix
 
-deploy:
+offline: build
+	npm run offline
+
+deploy: build
 	npm run deploy
