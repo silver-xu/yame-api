@@ -36,3 +36,14 @@ export interface IFacebookAuthResponse {
     id: string;
     expiryDate: Date;
 }
+
+export interface IDocumentAccess {
+    id: string;
+    userId: string;
+    permalink: string;
+    generatePDF: boolean;
+    generateWord: boolean;
+    secret: string;
+    protectionMode: 'A' | 'S' | undefined;
+    lastPublishedHash: string;
+}
