@@ -10,16 +10,18 @@ type Query {
   currentUser: User
   defaultDoc: DefaultDoc
   doc(docId:String): Doc
-  docByLink(userId:String, permalink: String): Doc
+  docByPermalink(username:String, permalink: String): Doc  
 }
 
 type Mutation {
   updateDocRepo(docRepoMutation: DocRepoMutation): Boolean
+  publishDoc(docMutation: DocMutation): Boolean
   updateDocAccess(docAccessMutation: DocAccessMutation): Boolean
 }
 
 type DocRepo {
   docs: [Doc]
+  publishedDocs: [Doc]
 }
 
 type DefaultDoc{

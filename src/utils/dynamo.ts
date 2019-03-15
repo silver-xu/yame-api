@@ -1,8 +1,14 @@
 import AWS from 'aws-sdk';
-import { IDocumentAccess as IDocAccess } from '../types';
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
+import {
+    IDocumentAccess as IDocAccess,
+    IUserProfile
+} from '../types';
+const dynamoDb = new AWS.DynamoDB.DocumentClient({
+    region: 'ap-southeast-2'
+});
 
 const DOCUMENT_ACCESS_TABLE = 'DocumentAccess';
+const USER_PROFILE_TABLE = 'UserProfile';
 
 export const putObjectToDynamo = async (
     object: any,
@@ -27,7 +33,7 @@ export const getDocAccess = async (
     const dynamoParams = {
         TableName: DOCUMENT_ACCESS_TABLE,
         ProjectionExpression:
-            'id, userId, permalink, generatePDF, generateWord, secret, protectionMode, lastPublishedHash',
+            'id, userId, permalink, generatePDF, generateWord, secret, protectionMode',
         KeyConditionExpression:
             'userId = :uid and permalink = :plink',
         ExpressionAttributeValues: {
@@ -40,4 +46,50 @@ export const getDocAccess = async (
     const item = result.Items.length > 0 ? result.Items[0] : null;
 
     return item as IDocAccess;
+};
+
+export const getUserProfileByName = async (
+    name: string
+): Promise<IUserProfile> => {
+    const dynamoParams = {
+        TableName: USER_PROFILE_TABLE,
+        ProjectionExpression: 'id, username, userType',
+        KeyConditionExpression: 'username = :uname',
+        ExpressionAttributeValues: {
+            ':uname': name
+        }
+    };
+    const result = await dynamoDb.query(dynamoParams).promise();
+    const item = result.Items.length > 0 ? result.Items[0] : null;
+
+    return item as IUserProfile;
+};
+
+export const getUserProfileById = async (
+    id: string
+): Promise<IUserProfile> => {
+    const dynamoParams = {
+        TableName: USER_PROFILE_TABLE,
+        ProjectionExpression: 'id, username, userType',
+        KeyConditionExpression: 'id = :uid',
+        ExpressionAttributeValues: {
+            ':uid': id
+        }
+    };
+    const result = await dynamoDb.query(dynamoParams).promise();
+    const item = result.Items.length > 0 ? result.Items[0] : null;
+
+    return item as IUserProfile;
+};
+
+export const registerUserProfile = async (
+    userProfile: IUserProfile
+) => {
+    const existingUserProfile = await getUserProfileById(
+        userProfile.id
+    );
+
+    if (!existingUserProfile) {
+        await putObjectToDynamo(userProfile, USER_PROFILE_TABLE);
+    }
 };

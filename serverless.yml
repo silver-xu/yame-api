@@ -2,7 +2,12 @@ service: yame-api
 
 custom:
     bucket: yame-dev
-
+    customDomain:
+        domainName: api.dev.yame.io
+        certificateName: '*.yame.io'
+        basePath: ''
+        stage: ${self:provider.stage}
+        createRoute53Record: true
 provider:
     name: aws
     runtime: nodejs8.10
@@ -14,6 +19,11 @@ provider:
               - dynamodb:GetItem
               - dynamodb:UpdateItem
           Resource: 'arn:aws:dynamodb:${self:provider.region, self:provider.region}:*:table/DocumentAccess'
+        - Effect: Allow
+          Action:
+              - dynamodb:GetItem
+              - dynamodb:UpdateItem
+          Resource: 'arn:aws:dynamodb:${self:provider.region, self:provider.region}:*:table/UserProfile'
         - Effect: Allow
           Action:
               - s3:*
@@ -31,6 +41,7 @@ functions:
             - http: 'ANY {proxy+}'
 plugins:
     - serverless-offline
+    - serverless-domain-manager
 
 resources:
     Resources:
@@ -52,12 +63,37 @@ resources:
                     WriteCapacityUnits: 1
                 TableName: DocumentAccess
                 GlobalSecondaryIndexes:
-                    - IndexName: urlAccess
+                    - IndexName: userIdPermalinkIndex
                       KeySchema:
                           - AttributeName: userId
                             KeyType: HASH
                           - AttributeName: permalink
                             KeyType: RANGE
+                      Projection:
+                          ProjectionType: ALL
+                      ProvisionedThroughput:
+                          ReadCapacityUnits: 1
+                          WriteCapacityUnits: 1
+        UserProfileTable:
+            Type: 'AWS::DynamoDB::Table'
+            Properties:
+                AttributeDefinitions:
+                    - AttributeName: id
+                      AttributeType: S
+                    - AttributeName: username
+                      AttributeType: S
+                KeySchema:
+                    - AttributeName: id
+                      KeyType: HASH
+                ProvisionedThroughput:
+                    ReadCapacityUnits: 1
+                    WriteCapacityUnits: 1
+                TableName: UserProfile
+                GlobalSecondaryIndexes:
+                    - IndexName: nameIndex
+                      KeySchema:
+                          - AttributeName: username
+                            KeyType: HASH
                       Projection:
                           ProjectionType: ALL
                       ProvisionedThroughput:

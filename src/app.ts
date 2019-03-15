@@ -5,10 +5,11 @@ import uuidv4 from 'uuid/v4';
 import { resolvers } from './data/resolvers';
 import schema from './data/schema';
 import {
-    inspectUser,
+    loginUser,
     obtainAppToken
 } from './services/facebook-service';
 import { UserType } from './types';
+import { registerUserProfile } from './utils/dynamo';
 
 export const createApp = async () => {
     const app = express();
@@ -28,11 +29,18 @@ export const createApp = async () => {
                     userType: UserType.Anonymous,
                     authToken
                 };
+
+                await registerUserProfile({
+                    id: authToken,
+                    username: authToken,
+                    userType: UserType.Anonymous
+                });
+
                 return { user: firstTimeAnonymousUser };
             } else if (token.startsWith('fb-')) {
                 const authToken = token.substring(3);
 
-                const facebookAuthResponse = await inspectUser(
+                const facebookAuthResponse = await loginUser(
                     authToken,
                     fbAppAccessToken
                 );
@@ -40,8 +48,18 @@ export const createApp = async () => {
                 const facebookUser = {
                     id: facebookAuthResponse.id,
                     userType: UserType.Facebook,
-                    authToken
+                    authToken,
+                    name: facebookAuthResponse.name
                 };
+
+                await registerUserProfile({
+                    id: facebookUser.id,
+                    username: facebookUser.name
+                        .toLowerCase()
+                        .split(' ')
+                        .join('-'),
+                    userType: UserType.Facebook
+                });
 
                 return { user: facebookUser };
             } else {

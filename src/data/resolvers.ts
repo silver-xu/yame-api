@@ -4,9 +4,10 @@ import {
     getDefaultDoc,
     getDocForUser,
     getDocRepoForUser,
-    mutateDocRepoForUser
+    mutateDocRepoForUser,
+    publishDocForUser
 } from '../services/doc-service';
-import { IDocRepoMutation } from '../types';
+import { IDocRepoMutation, IDocMutation } from '../types';
 
 const MOCK_MODE = false;
 const mockDocRepo = {
@@ -29,7 +30,8 @@ const mockDocRepo = {
 const mockDoc = {
     id: 'test 1',
     docName: 'test 1 name',
-    content: '# Heading 1\r\n## Heading 2\r\n### Heading 3\r\ncontents',
+    content:
+        '# Heading 1\r\n## Heading 2\r\n### Heading 3\r\ncontents',
     lastModified: new Date()
 };
 
@@ -67,11 +69,29 @@ export const resolvers = {
     Mutation: {
         async updateDocRepo(
             _: any,
-            { docRepoMutation }: { docRepoMutation: IDocRepoMutation },
+            {
+                docRepoMutation
+            }: { docRepoMutation: IDocRepoMutation },
             context: any
         ): Promise<boolean> {
             try {
-                await mutateDocRepoForUser(context.user.id, docRepoMutation);
+                await mutateDocRepoForUser(
+                    context.user.id,
+                    docRepoMutation
+                );
+                return true;
+            } catch (error) {
+                console.log(error);
+                return Promise.resolve(false);
+            }
+        },
+        async publishDoc(
+            _: any,
+            { docMutation }: { docMutation: IDocMutation },
+            context: any
+        ): Promise<boolean> {
+            try {
+                await publishDocForUser(context.user.id, docMutation);
                 return true;
             } catch (error) {
                 console.log(error);

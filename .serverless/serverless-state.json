@@ -22,6 +22,14 @@
         {
           "Effect": "Allow",
           "Action": [
+            "dynamodb:GetItem",
+            "dynamodb:UpdateItem"
+          ],
+          "Resource": "arn:aws:dynamodb:ap-southeast-2:*:table/UserProfile"
+        },
+        {
+          "Effect": "Allow",
+          "Action": [
             "s3:*"
           ],
           "Resource": "arn:aws:s3:::yame-dev/*"
@@ -124,6 +132,9 @@
                       },
                       {
                         "$ref": "$[\"service\"][\"provider\"][\"iamRoleStatements\"][2]"
+                      },
+                      {
+                        "$ref": "$[\"service\"][\"provider\"][\"iamRoleStatements\"][3]"
                       }
                     ]
                   }
@@ -150,7 +161,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/yame-api/dev/1552610108518-2019-03-15T00:35:08.518Z/yame-api.zip"
+                "S3Key": "serverless/yame-api/dev/1552651603780-2019-03-15T12:06:43.780Z/yame-api.zip"
               },
               "FunctionName": "yame-api-dev-app",
               "Handler": "dist/handler.handler",
@@ -169,14 +180,14 @@
               "IamRoleLambdaExecution"
             ]
           },
-          "AppLambdaVersionSnpesRlPJosZdPko25udYCxzQgU5JTrlhqFrZPdKEo": {
+          "AppLambdaVersionLo2dj3U7dovSGe0IUCRhZqkcWwMHLby8ELq5Mq4k3Mg": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "AppLambdaFunction"
               },
-              "CodeSha256": "86c6LIYoyX5ubrYWn4Aab+3ON3wmB9+P+fIvjD5YOPQ="
+              "CodeSha256": "gopnurY8CPDObACtRhwvdJZC6+ogcbZP5ZkhGWfzs1I="
             }
           },
           "ApiGatewayRestApi": {
@@ -294,7 +305,7 @@
               "MethodResponses": []
             }
           },
-          "ApiGatewayDeployment1552610108581": {
+          "ApiGatewayDeployment1552651603841": {
             "Type": "AWS::ApiGateway::Deployment",
             "Properties": {
               "RestApiId": {
@@ -384,7 +395,7 @@
               "TableName": "DocumentAccess",
               "GlobalSecondaryIndexes": [
                 {
-                  "IndexName": "urlAccess",
+                  "IndexName": "userIdPermalinkIndex",
                   "KeySchema": [
                     {
                       "AttributeName": "userId",
@@ -393,6 +404,50 @@
                     {
                       "AttributeName": "permalink",
                       "KeyType": "RANGE"
+                    }
+                  ],
+                  "Projection": {
+                    "ProjectionType": "ALL"
+                  },
+                  "ProvisionedThroughput": {
+                    "ReadCapacityUnits": 1,
+                    "WriteCapacityUnits": 1
+                  }
+                }
+              ]
+            }
+          },
+          "UserProfileTable": {
+            "Type": "AWS::DynamoDB::Table",
+            "Properties": {
+              "AttributeDefinitions": [
+                {
+                  "AttributeName": "id",
+                  "AttributeType": "S"
+                },
+                {
+                  "AttributeName": "username",
+                  "AttributeType": "S"
+                }
+              ],
+              "KeySchema": [
+                {
+                  "AttributeName": "id",
+                  "KeyType": "HASH"
+                }
+              ],
+              "ProvisionedThroughput": {
+                "ReadCapacityUnits": 1,
+                "WriteCapacityUnits": 1
+              },
+              "TableName": "UserProfile",
+              "GlobalSecondaryIndexes": [
+                {
+                  "IndexName": "nameIndex",
+                  "KeySchema": [
+                    {
+                      "AttributeName": "username",
+                      "KeyType": "HASH"
                     }
                   ],
                   "Projection": {
@@ -416,7 +471,7 @@
           "AppLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "AppLambdaVersionSnpesRlPJosZdPko25udYCxzQgU5JTrlhqFrZPdKEo"
+              "Ref": "AppLambdaVersionLo2dj3U7dovSGe0IUCRhZqkcWwMHLby8ELq5Mq4k3Mg"
             }
           },
           "ServiceEndpoint": {
@@ -470,10 +525,18 @@
       "vpc": {}
     },
     "custom": {
-      "bucket": "yame-dev"
+      "bucket": "yame-dev",
+      "customDomain": {
+        "domainName": "api.dev.yame.io",
+        "certificateName": "*.yame.io",
+        "basePath": "",
+        "stage": "dev",
+        "createRoute53Record": true
+      }
     },
     "plugins": [
-      "serverless-offline"
+      "serverless-offline",
+      "serverless-domain-manager"
     ],
     "pluginsData": {},
     "functions": {
@@ -527,7 +590,7 @@
             "TableName": "DocumentAccess",
             "GlobalSecondaryIndexes": [
               {
-                "IndexName": "urlAccess",
+                "IndexName": "userIdPermalinkIndex",
                 "KeySchema": [
                   {
                     "AttributeName": "userId",
@@ -548,6 +611,50 @@
               }
             ]
           }
+        },
+        "UserProfileTable": {
+          "Type": "AWS::DynamoDB::Table",
+          "Properties": {
+            "AttributeDefinitions": [
+              {
+                "AttributeName": "id",
+                "AttributeType": "S"
+              },
+              {
+                "AttributeName": "username",
+                "AttributeType": "S"
+              }
+            ],
+            "KeySchema": [
+              {
+                "AttributeName": "id",
+                "KeyType": "HASH"
+              }
+            ],
+            "ProvisionedThroughput": {
+              "ReadCapacityUnits": 1,
+              "WriteCapacityUnits": 1
+            },
+            "TableName": "UserProfile",
+            "GlobalSecondaryIndexes": [
+              {
+                "IndexName": "nameIndex",
+                "KeySchema": [
+                  {
+                    "AttributeName": "username",
+                    "KeyType": "HASH"
+                  }
+                ],
+                "Projection": {
+                  "ProjectionType": "ALL"
+                },
+                "ProvisionedThroughput": {
+                  "ReadCapacityUnits": 1,
+                  "WriteCapacityUnits": 1
+                }
+              }
+            ]
+          }
         }
       },
       "Outputs": {}
@@ -556,7 +663,7 @@
     "artifact": "/home/silver/Repositories/yame-api/.serverless/yame-api.zip"
   },
   "package": {
-    "artifactDirectoryName": "serverless/yame-api/dev/1552610108518-2019-03-15T00:35:08.518Z",
+    "artifactDirectoryName": "serverless/yame-api/dev/1552651603780-2019-03-15T12:06:43.780Z",
     "artifact": "yame-api.zip"
   }
 }

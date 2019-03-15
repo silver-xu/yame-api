@@ -4,6 +4,9 @@ export STAGE
 start: node_modules
 	npm start
 
+watch: node_modules
+	npm run start:watch
+
 node_modules:
 	npm install
 

@@ -6,8 +6,11 @@ import {
     IDocRepoMutation
 } from '../types';
 export {
-    updateDocAccess as updateDocumentAccess
+    updateDocAccess,
+    registerUserProfile
 } from '../utils/dynamo';
+import { getDocAccess, getUserProfileByName } from '../utils/dynamo';
+
 import {
     deleteObjectFromS3,
     getObjectFromS3,
@@ -31,10 +34,14 @@ export const getDefaultDoc = async (): Promise<IDefaultDoc> => {
 export const getDocRepoForUser = async (
     id: string
 ): Promise<IDocRepo> => {
-    let keys = await listKeysFromS3(BUCKET, `${id}/docs/`);
+    let docKeys = await listKeysFromS3(BUCKET, `${id}/docs/`);
+    const publishedDocKeys = await listKeysFromS3(
+        BUCKET,
+        `${id}/published/`
+    );
 
     // initialize Docs for new user
-    if (!keys || keys.length === 0) {
+    if (!docKeys || docKeys.length === 0) {
         const defaultDock = await getDefaultDoc();
         await addOrUpdateDocsForUser(id, [
             {
@@ -44,15 +51,20 @@ export const getDocRepoForUser = async (
                 lastModified: new Date()
             }
         ]);
-        keys = await listKeysFromS3(BUCKET, `${id}/docs/`);
+        docKeys = await listKeysFromS3(BUCKET, `${id}/docs/`);
     }
 
     const docs = await Promise.all(
-        keys.map(key => getDocForUserByKey(key))
+        docKeys.map(key => getDocByKey(key))
+    );
+
+    const publishedDocs = await Promise.all(
+        publishedDocKeys.map(key => getDocByKey(key))
     );
 
     return {
-        docs
+        docs,
+        publishedDocs
     };
 };
 
@@ -73,6 +85,29 @@ export const mutateDocRepoForUser = async (
     await Promise.all([newAndUpdateDocsTask, deleteDocsTask]);
 };
 
+export const publishDocForUser = async (id: string, doc: IDoc) => {
+    await putObjectToS3(
+        BUCKET,
+        `${id}/published/${doc.id}.json`,
+        doc
+    );
+};
+
+export const getDocByPermalink = async (
+    username: string,
+    permalink: string
+) => {
+    const userProfile = await getUserProfileByName(username);
+    const documentAccess = await getDocAccess(
+        userProfile.id,
+        permalink
+    );
+
+    return await getDocByKey(
+        `${userProfile.id}/${documentAccess.id}`
+    );
+};
+
 export const getDocForUser = async (
     id: string,
     docId: string
@@ -89,7 +124,7 @@ export const getDocForUser = async (
     };
 };
 
-const getDocForUserByKey = async (key: string): Promise<IDoc> => {
+const getDocByKey = async (key: string): Promise<IDoc> => {
     const doc = await getObjectFromS3<IDoc>(BUCKET, key);
     return {
         ...doc,
