@@ -52,7 +52,7 @@ resources:
                     WriteCapacityUnits: 1
                 TableName: DocumentAccess
                 GlobalSecondaryIndexes:
-                    - IndexName: ‘urlAccess'
+                    - IndexName: urlAccess
                       KeySchema:
                           - AttributeName: userId
                             KeyType: HASH

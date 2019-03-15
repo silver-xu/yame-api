@@ -150,7 +150,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/yame-api/dev/1552603912588-2019-03-14T22:51:52.588Z/yame-api.zip"
+                "S3Key": "serverless/yame-api/dev/1552610108518-2019-03-15T00:35:08.518Z/yame-api.zip"
               },
               "FunctionName": "yame-api-dev-app",
               "Handler": "dist/handler.handler",
@@ -169,14 +169,14 @@
               "IamRoleLambdaExecution"
             ]
           },
-          "AppLambdaVersion5wOLDfIGNNeLfDgHhoE9eaKWXiUH4bvGcHMRWUU648": {
+          "AppLambdaVersionSnpesRlPJosZdPko25udYCxzQgU5JTrlhqFrZPdKEo": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "AppLambdaFunction"
               },
-              "CodeSha256": "3PUP5maSkUKQULzdY/Ga+pt2+1Yu0+A4vBOOfWE3GdU="
+              "CodeSha256": "86c6LIYoyX5ubrYWn4Aab+3ON3wmB9+P+fIvjD5YOPQ="
             }
           },
           "ApiGatewayRestApi": {
@@ -294,7 +294,7 @@
               "MethodResponses": []
             }
           },
-          "ApiGatewayDeployment1552603912651": {
+          "ApiGatewayDeployment1552610108581": {
             "Type": "AWS::ApiGateway::Deployment",
             "Properties": {
               "RestApiId": {
@@ -359,6 +359,10 @@
             "Properties": {
               "AttributeDefinitions": [
                 {
+                  "AttributeName": "id",
+                  "AttributeType": "S"
+                },
+                {
                   "AttributeName": "permalink",
                   "AttributeType": "S"
                 },
@@ -369,19 +373,37 @@
               ],
               "KeySchema": [
                 {
-                  "AttributeName": "userId",
+                  "AttributeName": "id",
                   "KeyType": "HASH"
-                },
-                {
-                  "AttributeName": "permalink",
-                  "KeyType": "RANGE"
                 }
               ],
               "ProvisionedThroughput": {
                 "ReadCapacityUnits": 1,
                 "WriteCapacityUnits": 1
               },
-              "TableName": "DocumentAccess"
+              "TableName": "DocumentAccess",
+              "GlobalSecondaryIndexes": [
+                {
+                  "IndexName": "urlAccess",
+                  "KeySchema": [
+                    {
+                      "AttributeName": "userId",
+                      "KeyType": "HASH"
+                    },
+                    {
+                      "AttributeName": "permalink",
+                      "KeyType": "RANGE"
+                    }
+                  ],
+                  "Projection": {
+                    "ProjectionType": "ALL"
+                  },
+                  "ProvisionedThroughput": {
+                    "ReadCapacityUnits": 1,
+                    "WriteCapacityUnits": 1
+                  }
+                }
+              ]
             }
           }
         },
@@ -394,7 +416,7 @@
           "AppLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "AppLambdaVersion5wOLDfIGNNeLfDgHhoE9eaKWXiUH4bvGcHMRWUU648"
+              "Ref": "AppLambdaVersionSnpesRlPJosZdPko25udYCxzQgU5JTrlhqFrZPdKEo"
             }
           },
           "ServiceEndpoint": {
@@ -480,6 +502,10 @@
           "Properties": {
             "AttributeDefinitions": [
               {
+                "AttributeName": "id",
+                "AttributeType": "S"
+              },
+              {
                 "AttributeName": "permalink",
                 "AttributeType": "S"
               },
@@ -490,19 +516,37 @@
             ],
             "KeySchema": [
               {
-                "AttributeName": "userId",
+                "AttributeName": "id",
                 "KeyType": "HASH"
-              },
-              {
-                "AttributeName": "permalink",
-                "KeyType": "RANGE"
               }
             ],
             "ProvisionedThroughput": {
               "ReadCapacityUnits": 1,
               "WriteCapacityUnits": 1
             },
-            "TableName": "DocumentAccess"
+            "TableName": "DocumentAccess",
+            "GlobalSecondaryIndexes": [
+              {
+                "IndexName": "urlAccess",
+                "KeySchema": [
+                  {
+                    "AttributeName": "userId",
+                    "KeyType": "HASH"
+                  },
+                  {
+                    "AttributeName": "permalink",
+                    "KeyType": "RANGE"
+                  }
+                ],
+                "Projection": {
+                  "ProjectionType": "ALL"
+                },
+                "ProvisionedThroughput": {
+                  "ReadCapacityUnits": 1,
+                  "WriteCapacityUnits": 1
+                }
+              }
+            ]
           }
         }
       },
@@ -512,7 +556,7 @@
     "artifact": "/home/silver/Repositories/yame-api/.serverless/yame-api.zip"
   },
   "package": {
-    "artifactDirectoryName": "serverless/yame-api/dev/1552603912588-2019-03-14T22:51:52.588Z",
+    "artifactDirectoryName": "serverless/yame-api/dev/1552610108518-2019-03-15T00:35:08.518Z",
     "artifact": "yame-api.zip"
   }
 }
