@@ -5,7 +5,9 @@ import {
     IDocRepo,
     IDocRepoMutation
 } from '../types';
-export { updateDocumentAccess } from '../utils/dynamo';
+export {
+    updateDocAccess as updateDocumentAccess
+} from '../utils/dynamo';
 import {
     deleteObjectFromS3,
     getObjectFromS3,

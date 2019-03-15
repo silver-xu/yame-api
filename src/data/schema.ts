@@ -10,10 +10,12 @@ type Query {
   currentUser: User
   defaultDoc: DefaultDoc
   doc(docId:String): Doc
+  docByLink(userId:String, permalink: String): Doc
 }
 
 type Mutation {
   updateDocRepo(docRepoMutation: DocRepoMutation): Boolean
+  updateDocAccess(docAccessMutation: DocAccessMutation): Boolean
 }
 
 type DocRepo {
@@ -38,6 +40,17 @@ type User {
   id: String!
 }
 
+type DocAccess {
+  id: String
+  userId: String
+  permalink: String
+  generatePDF: Boolean
+  generateWord: Boolean
+  secret: String
+  protectionMode: String
+  lastPublishedHash: String
+}
+
 input DocRepoMutation{
   newDocs: [DocMutation!]
   updatedDocs: [DocMutation!]
@@ -49,6 +62,17 @@ input DocMutation{
   docName: String
   content: String
   lastModified: DateTime
+}
+
+input DocAccessMutation{
+  id: String
+  userId: String
+  permalink: String
+  generatePDF: Boolean
+  generateWord: Boolean
+  secret: String
+  protectionMode: String
+  lastPublishedHash: String
 }
 
 enum UserType {

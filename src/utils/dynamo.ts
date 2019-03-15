@@ -1,5 +1,5 @@
 import AWS from 'aws-sdk';
-import { IDocumentAccess } from '../types';
+import { IDocumentAccess as IDocAccess } from '../types';
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
 const DOCUMENT_ACCESS_TABLE = 'DocumentAccess';
@@ -16,16 +16,14 @@ export const putObjectToDynamo = async (
     return dynamoDb.put(dynamoParams).promise();
 };
 
-export const updateDocumentAccess = async (
-    documentAccess: IDocumentAccess
-) => {
+export const updateDocAccess = async (documentAccess: IDocAccess) => {
     await putObjectToDynamo(documentAccess, DOCUMENT_ACCESS_TABLE);
 };
 
-export const getDocumentAccess = async (
+export const getDocAccess = async (
     userId: string,
     permalink: string
-): Promise<IDocumentAccess> => {
+): Promise<IDocAccess> => {
     const dynamoParams = {
         TableName: DOCUMENT_ACCESS_TABLE,
         ProjectionExpression:
@@ -41,5 +39,5 @@ export const getDocumentAccess = async (
     const result = await dynamoDb.query(dynamoParams).promise();
     const item = result.Items.length > 0 ? result.Items[0] : null;
 
-    return item as IDocumentAccess;
+    return item as IDocAccess;
 };
