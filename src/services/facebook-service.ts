@@ -14,6 +14,22 @@ const authResponseCache: {
     [authToken: string]: IFacebookAuthResponse;
 } = {};
 
+const getUsername = async (
+    userId: string,
+    appAccessToken: string
+): Promise<string> => {
+    const params = {
+        access_token: appAccessToken
+    };
+
+    const userProfileResponse = await fetch(
+        getFetchUrl(`${FB_USER_PROFILE_URL}/${userId}`, params)
+    );
+
+    const userProfileDataResponse = await userProfileResponse.json();
+    return userProfileDataResponse.name;
+};
+
 export const obtainAppToken = async () => {
     const params = {
         client_id: APP_ID,
@@ -67,20 +83,4 @@ export const loginUser = async (
 
     authResponseCache[userAuthToken] = authResponse;
     return authResponse;
-};
-
-export const getUsername = async (
-    userId: string,
-    appAccessToken: string
-): Promise<string> => {
-    const params = {
-        access_token: appAccessToken
-    };
-
-    const userProfileResponse = await fetch(
-        getFetchUrl(`${FB_USER_PROFILE_URL}/${userId}`, params)
-    );
-
-    const userProfileDataResponse = await userProfileResponse.json();
-    return userProfileDataResponse.name;
 };

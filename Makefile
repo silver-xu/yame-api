@@ -25,5 +25,5 @@ fix: node_modules
 offline: build
 	npm run offline
 
-deploy: build
+deploy:
 	npm run deploy

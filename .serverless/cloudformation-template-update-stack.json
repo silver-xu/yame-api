@@ -82,7 +82,9 @@
                   "Effect": "Allow",
                   "Action": [
                     "dynamodb:GetItem",
-                    "dynamodb:UpdateItem"
+                    "dynamodb:Query",
+                    "dynamodb:UpdateItem",
+                    "dynamodb:PutItem"
                   ],
                   "Resource": "arn:aws:dynamodb:ap-southeast-2:*:table/DocumentAccess"
                 },
@@ -90,7 +92,9 @@
                   "Effect": "Allow",
                   "Action": [
                     "dynamodb:GetItem",
-                    "dynamodb:UpdateItem"
+                    "dynamodb:Query",
+                    "dynamodb:UpdateItem",
+                    "dynamodb:PutItem"
                   ],
                   "Resource": "arn:aws:dynamodb:ap-southeast-2:*:table/UserProfile"
                 },
@@ -133,7 +137,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/yame-api/dev/1552651603780-2019-03-15T12:06:43.780Z/yame-api.zip"
+          "S3Key": "serverless/yame-api/dev/1552689052620-2019-03-15T22:30:52.620Z/yame-api.zip"
         },
         "FunctionName": "yame-api-dev-app",
         "Handler": "dist/handler.handler",
@@ -152,14 +156,14 @@
         "IamRoleLambdaExecution"
       ]
     },
-    "AppLambdaVersionLo2dj3U7dovSGe0IUCRhZqkcWwMHLby8ELq5Mq4k3Mg": {
+    "AppLambdaVersiond1gpekfng9FRKhgfFViFoLealXMJCOW9fKtCvmXD7RA": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "AppLambdaFunction"
         },
-        "CodeSha256": "gopnurY8CPDObACtRhwvdJZC6+ogcbZP5ZkhGWfzs1I="
+        "CodeSha256": "ZbnBI+9Pq7LpPjSNNDEgJac+x13XJFrfm9WBk4bit14="
       }
     },
     "ApiGatewayRestApi": {
@@ -277,7 +281,7 @@
         "MethodResponses": []
       }
     },
-    "ApiGatewayDeployment1552651603841": {
+    "ApiGatewayDeployment1552689052682": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -443,7 +447,7 @@
     "AppLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "AppLambdaVersionLo2dj3U7dovSGe0IUCRhZqkcWwMHLby8ELq5Mq4k3Mg"
+        "Ref": "AppLambdaVersiond1gpekfng9FRKhgfFViFoLealXMJCOW9fKtCvmXD7RA"
       }
     },
     "ServiceEndpoint": {
