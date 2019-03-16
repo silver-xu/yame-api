@@ -1,5 +1,16 @@
 import uuidv4 from 'uuid';
-import { IDefaultDoc, IDoc, IDocRepo, IDocRepoMutation } from '../types';
+import {
+    IDefaultDoc,
+    IDoc,
+    IDocRepo,
+    IDocRepoMutation
+} from '../types';
+export {
+    updateDocAccess,
+    registerUserProfile
+} from '../utils/dynamo';
+import { getDocAccess, getUserProfileByName } from '../utils/dynamo';
+
 import {
     deleteObjectFromS3,
     getObjectFromS3,
@@ -7,11 +18,11 @@ import {
     putObjectToS3
 } from '../utils/s3';
 
-const bucket = 'yame-dev';
+const BUCKET = 'yame-dev';
 
 export const getDefaultDoc = async (): Promise<IDefaultDoc> => {
     const defaultDoc = await getObjectFromS3<IDefaultDoc>(
-        bucket,
+        BUCKET,
         'default.json'
     );
     return {
@@ -20,11 +31,17 @@ export const getDefaultDoc = async (): Promise<IDefaultDoc> => {
     };
 };
 
-export const getDocRepoForUser = async (id: string): Promise<IDocRepo> => {
-    let keys = await listKeysFromS3(bucket, `${id}/docs/`);
+export const getDocRepoForUser = async (
+    id: string
+): Promise<IDocRepo> => {
+    let docKeys = await listKeysFromS3(BUCKET, `${id}/docs/`);
+    const publishedDocKeys = await listKeysFromS3(
+        BUCKET,
+        `${id}/published/`
+    );
 
     // initialize Docs for new user
-    if (!keys || keys.length === 0) {
+    if (!docKeys || docKeys.length === 0) {
         const defaultDock = await getDefaultDoc();
         await addOrUpdateDocsForUser(id, [
             {
@@ -34,13 +51,20 @@ export const getDocRepoForUser = async (id: string): Promise<IDocRepo> => {
                 lastModified: new Date()
             }
         ]);
-        keys = await listKeysFromS3(bucket, `${id}/docs/`);
+        docKeys = await listKeysFromS3(BUCKET, `${id}/docs/`);
     }
-    console.log(keys);
-    const docs = await Promise.all(keys.map(key => getDocForUserByKey(key)));
+
+    const docs = await Promise.all(
+        docKeys.map(key => getDocByKey(key))
+    );
+
+    const publishedDocs = await Promise.all(
+        publishedDocKeys.map(key => getDocByKey(key))
+    );
 
     return {
-        docs
+        docs,
+        publishedDocs
     };
 };
 
@@ -53,24 +77,55 @@ export const mutateDocRepoForUser = async (
         ...docRepoMutation.updatedDocs
     ]);
 
-    const deleteDocsTask = deleteDocsForUser(id, docRepoMutation.deletedDocIds);
+    const deleteDocsTask = deleteDocsForUser(
+        id,
+        docRepoMutation.deletedDocIds
+    );
 
     await Promise.all([newAndUpdateDocsTask, deleteDocsTask]);
+};
+
+export const publishDocForUser = async (id: string, doc: IDoc) => {
+    await putObjectToS3(
+        BUCKET,
+        `${id}/published/${doc.id}.json`,
+        doc
+    );
+};
+
+export const getDocByPermalink = async (
+    username: string,
+    permalink: string
+) => {
+    const userProfile = await getUserProfileByName(username);
+    const documentAccess = await getDocAccess(
+        userProfile.id,
+        permalink
+    );
+
+    return await getDocByKey(
+        `${userProfile.id}/${documentAccess.id}`
+    );
 };
 
 export const getDocForUser = async (
     id: string,
     docId: string
 ): Promise<IDoc> => {
-    const doc = await getObjectFromS3<IDoc>(bucket, `${id}/${docId}.json`);
+    console.log(docId);
+    const doc = await getObjectFromS3<IDoc>(
+        BUCKET,
+        `${id}/docs/${docId}.json`
+    );
+
     return {
         ...doc,
         content: doc.content
     };
 };
 
-const getDocForUserByKey = async (key: string): Promise<IDoc> => {
-    const doc = await getObjectFromS3<IDoc>(bucket, key);
+const getDocByKey = async (key: string): Promise<IDoc> => {
+    const doc = await getObjectFromS3<IDoc>(BUCKET, key);
     return {
         ...doc,
         content: doc.content
@@ -83,7 +138,7 @@ const addOrUpdateDocsForUser = async (
 ): Promise<void> => {
     await Promise.all(
         docs.map(doc => {
-            putObjectToS3(bucket, `${id}/docs/${doc.id}.json`, doc);
+            putObjectToS3(BUCKET, `${id}/docs/${doc.id}.json`, doc);
         })
     );
 };
@@ -94,7 +149,7 @@ const deleteDocsForUser = async (
 ): Promise<void> => {
     await Promise.all(
         docsIds.map(docId => {
-            deleteObjectFromS3(bucket, `${id}/docs/${docId}.json`);
+            deleteObjectFromS3(BUCKET, `${id}/docs/${docId}.json`);
         })
     );
 };

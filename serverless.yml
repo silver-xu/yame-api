@@ -1,0 +1,111 @@
+service: yame-api
+
+custom:
+    bucket: yame-dev
+    customDomain:
+        domainName: ${self:custom.domainNames.${self:provider.stage}}
+        certificateName: ${self:custom.certificateNames.${self:provider.stage}}
+        basePath: ''
+        stage: ${self:provider.stage}
+        createRoute53Record: true
+    domainNames:
+        dev: api.dev.yame.io
+        prod: api.yame.io
+    certificateNames:
+        dev: '*.dev.yame.io'
+        prod: '*.yame.io'
+provider:
+    name: aws
+    runtime: nodejs8.10
+    stage: ${opt:stage}
+    region: ap-southeast-2
+    iamRoleStatements:
+        - Effect: Allow
+          Action:
+              - dynamodb:GetItem
+              - dynamodb:Query
+              - dynamodb:UpdateItem
+              - dynamodb:PutItem
+          Resource: 'arn:aws:dynamodb:${self:provider.region, self:provider.region}:*:table/DocumentAccess'
+        - Effect: Allow
+          Action:
+              - dynamodb:GetItem
+              - dynamodb:Query
+              - dynamodb:UpdateItem
+              - dynamodb:PutItem
+          Resource: 'arn:aws:dynamodb:${self:provider.region, self:provider.region}:*:table/UserProfile'
+        - Effect: Allow
+          Action:
+              - s3:*
+          Resource: 'arn:aws:s3:::${self:custom.bucket}/*'
+        - Effect: Allow
+          Action:
+              - s3:*
+          Resource: 'arn:aws:s3:::${self:custom.bucket}'
+
+functions:
+    app:
+        handler: dist/handler.handler
+        events:
+            - http: ANY /
+            - http: 'ANY {proxy+}'
+plugins:
+    - serverless-offline
+    - serverless-domain-manager
+
+resources:
+    Resources:
+        DocumentAccessTable:
+            Type: 'AWS::DynamoDB::Table'
+            Properties:
+                AttributeDefinitions:
+                    - AttributeName: id
+                      AttributeType: S
+                    - AttributeName: permalink
+                      AttributeType: S
+                    - AttributeName: userId
+                      AttributeType: S
+                KeySchema:
+                    - AttributeName: id
+                      KeyType: HASH
+                ProvisionedThroughput:
+                    ReadCapacityUnits: 1
+                    WriteCapacityUnits: 1
+                TableName: DocumentAccess
+                GlobalSecondaryIndexes:
+                    - IndexName: userIdPermalinkIndex
+                      KeySchema:
+                          - AttributeName: userId
+                            KeyType: HASH
+                          - AttributeName: permalink
+                            KeyType: RANGE
+                      Projection:
+                          ProjectionType: ALL
+                      ProvisionedThroughput:
+                          ReadCapacityUnits: 1
+                          WriteCapacityUnits: 1
+        UserProfileTable:
+            Type: 'AWS::DynamoDB::Table'
+            Properties:
+                AttributeDefinitions:
+                    - AttributeName: id
+                      AttributeType: S
+                    - AttributeName: username
+                      AttributeType: S
+                KeySchema:
+                    - AttributeName: id
+                      KeyType: HASH
+                ProvisionedThroughput:
+                    ReadCapacityUnits: 1
+                    WriteCapacityUnits: 1
+                TableName: UserProfile
+                GlobalSecondaryIndexes:
+                    - IndexName: nameIndex
+                      KeySchema:
+                          - AttributeName: username
+                            KeyType: HASH
+                      Projection:
+                          ProjectionType: ALL
+                      ProvisionedThroughput:
+                          ReadCapacityUnits: 1
+                          WriteCapacityUnits: 1

@@ -7,6 +7,7 @@ export interface IDoc {
 
 export interface IDocRepo {
     docs: IDoc[];
+    publishedDocs: IDoc[];
 }
 
 export interface IDefaultDoc {
@@ -31,8 +32,28 @@ export interface IDocRepoMutation {
     deletedDocIds: string[];
 }
 
+// tslint:disable-next-line:no-empty-interface
+export interface IDocMutation extends IDoc {}
+
 export interface IFacebookAuthResponse {
     isValid: boolean;
     id: string;
+    name: string;
     expiryDate: Date;
+}
+
+export interface IDocumentAccess {
+    id: string;
+    userId: string;
+    permalink: string;
+    generatePDF: boolean;
+    generateWord: boolean;
+    secret: string;
+    protectionMode: 'A' | 'S' | undefined;
+}
+
+export interface IUserProfile {
+    id: string;
+    username: string;
+    userType: UserType;
 }
