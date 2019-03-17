@@ -144,7 +144,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/yame-api/dev/1552783515291-2019-03-17T00:45:15.291Z/yame-api.zip"
+          "S3Key": "serverless/yame-api/dev/1552824454943-2019-03-17T12:07:34.943Z/yame-api.zip"
         },
         "FunctionName": "yame-api-dev-app",
         "Handler": "dist/handler.handler",
@@ -169,14 +169,14 @@
         "IamRoleLambdaExecution"
       ]
     },
-    "AppLambdaVersion05olggOcxn2D7okgG5bzrXeJCXJtD5SAgY9zTZyYW8": {
+    "AppLambdaVersionRyAkbm2nBbZ4scbwmOFDnD3aJ7dtLKrM5xbOttrDk": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "AppLambdaFunction"
         },
-        "CodeSha256": "r/fItOA830ZGy1r2ykd1CTtZtoUVEizfoc431EUpPCY="
+        "CodeSha256": "CehwE+QfdoD7NMz5vatjwiJ7ffXIjRRi3LJYoQsZLQI="
       }
     },
     "ApiGatewayRestApi": {
@@ -294,7 +294,7 @@
         "MethodResponses": []
       }
     },
-    "ApiGatewayDeployment1552783515354": {
+    "ApiGatewayDeployment1552824455004": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -460,7 +460,7 @@
     "AppLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "AppLambdaVersion05olggOcxn2D7okgG5bzrXeJCXJtD5SAgY9zTZyYW8"
+        "Ref": "AppLambdaVersionRyAkbm2nBbZ4scbwmOFDnD3aJ7dtLKrM5xbOttrDk"
       }
     },
     "ServiceEndpoint": {

@@ -1,4 +1,9 @@
-import AWS from 'aws-sdk';
+import AWS, { AWSError } from 'aws-sdk';
+import { PromiseResult } from 'aws-sdk/lib/request';
+import {
+    PutObjectOutput,
+    DeleteObjectOutput
+} from 'aws-sdk/clients/s3';
 const s3 = new AWS.S3();
 
 export const getObjectFromS3 = async <T>(
@@ -26,38 +31,34 @@ export const listKeysFromS3 = async (
             Prefix: prefix
         })
         .promise();
-    return response.Contents.filter(content => !content.Key.endsWith('/')).map(
-        content => content.Key
-    );
+    return response.Contents.filter(
+        content => !content.Key.endsWith('/')
+    ).map(content => content.Key);
 };
 
-export const putObjectToS3 = async (
+export const putObjectToS3 = (
     bucket: string,
     key: string,
     obj: any
-): Promise<void> => {
+): Promise<PromiseResult<PutObjectOutput, AWSError>> => {
     const body = JSON.stringify(obj);
-    await s3
+    return s3
         .putObject({
             Bucket: bucket,
             Key: key,
             Body: body
         })
         .promise();
-
-    console.log(`${bucket}/${key} uploaded`);
 };
 
-export const deleteObjectFromS3 = async (
+export const deleteObjectFromS3 = (
     bucket: string,
     key: string
-): Promise<void> => {
-    await s3
+): Promise<PromiseResult<DeleteObjectOutput, AWSError>> => {
+    return s3
         .deleteObject({
             Bucket: bucket,
             Key: key
         })
         .promise();
-
-    console.log(`${bucket}/${key} deleted`);
 };

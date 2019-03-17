@@ -43,15 +43,19 @@ export const getDocRepoForUser = async (
     // initialize Docs for new user
     if (!docKeys || docKeys.length === 0) {
         const defaultDock = await getDefaultDoc();
+        const docId = uuidv4();
         await addOrUpdateDocsForUser(id, [
             {
-                id: uuidv4(),
+                id: docId,
                 docName: `${defaultDock.namePrefix} 1`,
                 content: defaultDock.defaultContent,
                 lastModified: new Date()
             }
         ]);
-        docKeys = await listKeysFromS3(BUCKET, `${id}/docs/`);
+
+        docKeys = [`${id}/docs/${docId}.json`];
+
+        console.log(docKeys);
     }
 
     const docs = await Promise.all(
@@ -138,7 +142,11 @@ const addOrUpdateDocsForUser = async (
 ): Promise<void> => {
     await Promise.all(
         docs.map(doc => {
-            putObjectToS3(BUCKET, `${id}/docs/${doc.id}.json`, doc);
+            return putObjectToS3(
+                BUCKET,
+                `${id}/docs/${doc.id}.json`,
+                doc
+            );
         })
     );
 };
@@ -149,7 +157,10 @@ const deleteDocsForUser = async (
 ): Promise<void> => {
     await Promise.all(
         docsIds.map(docId => {
-            deleteObjectFromS3(BUCKET, `${id}/docs/${docId}.json`);
+            return deleteObjectFromS3(
+                BUCKET,
+                `${id}/docs/${docId}.json`
+            );
         })
     );
 };
