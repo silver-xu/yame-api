@@ -6,10 +6,19 @@ export const handler = async (
     event: APIGatewayEvent,
     context: Context
 ) => {
-    const server = awsServerlessExpress.createServer(
-        await createApp()
-    );
-    return new Promise(() => {
-        awsServerlessExpress.proxy(server, event, context);
-    });
+    try {
+        const app = await createApp();
+
+        const server = awsServerlessExpress.createServer(app);
+        const proxy = awsServerlessExpress.proxy(
+            server,
+            event,
+            context
+        );
+        return new Promise(() => proxy);
+    } catch (err) {
+        return new Promise(() => {
+            throw err;
+        });
+    }
 };

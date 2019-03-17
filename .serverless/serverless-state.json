@@ -44,6 +44,13 @@
             "s3:*"
           ],
           "Resource": "arn:aws:s3:::yame-dev"
+        },
+        {
+          "Effect": "Allow",
+          "Action": [
+            "logs:*"
+          ],
+          "Resource": "*"
         }
       ],
       "versionFunctions": true,
@@ -139,6 +146,9 @@
                       },
                       {
                         "$ref": "$[\"service\"][\"provider\"][\"iamRoleStatements\"][3]"
+                      },
+                      {
+                        "$ref": "$[\"service\"][\"provider\"][\"iamRoleStatements\"][4]"
                       }
                     ]
                   }
@@ -165,7 +175,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/yame-api/dev/1552689052620-2019-03-15T22:30:52.620Z/yame-api.zip"
+                "S3Key": "serverless/yame-api/dev/1552783515291-2019-03-17T00:45:15.291Z/yame-api.zip"
               },
               "FunctionName": "yame-api-dev-app",
               "Handler": "dist/handler.handler",
@@ -177,21 +187,27 @@
                 ]
               },
               "Runtime": "nodejs8.10",
-              "Timeout": 6
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "FB_APP_ID": 268079694111991,
+                  "FB_APP_SECRET": "ada04069569b2fbf6db92954d1731d5d"
+                }
+              }
             },
             "DependsOn": [
               "AppLogGroup",
               "IamRoleLambdaExecution"
             ]
           },
-          "AppLambdaVersiond1gpekfng9FRKhgfFViFoLealXMJCOW9fKtCvmXD7RA": {
+          "AppLambdaVersion05olggOcxn2D7okgG5bzrXeJCXJtD5SAgY9zTZyYW8": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "AppLambdaFunction"
               },
-              "CodeSha256": "ZbnBI+9Pq7LpPjSNNDEgJac+x13XJFrfm9WBk4bit14="
+              "CodeSha256": "r/fItOA830ZGy1r2ykd1CTtZtoUVEizfoc431EUpPCY="
             }
           },
           "ApiGatewayRestApi": {
@@ -309,7 +325,7 @@
               "MethodResponses": []
             }
           },
-          "ApiGatewayDeployment1552689052682": {
+          "ApiGatewayDeployment1552783515354": {
             "Type": "AWS::ApiGateway::Deployment",
             "Properties": {
               "RestApiId": {
@@ -475,7 +491,7 @@
           "AppLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "AppLambdaVersiond1gpekfng9FRKhgfFViFoLealXMJCOW9fKtCvmXD7RA"
+              "Ref": "AppLambdaVersion05olggOcxn2D7okgG5bzrXeJCXJtD5SAgY9zTZyYW8"
             }
           },
           "ServiceEndpoint": {
@@ -562,6 +578,10 @@
             "http": "ANY {proxy+}"
           }
         ],
+        "environment": {
+          "FB_APP_ID": 268079694111991,
+          "FB_APP_SECRET": "ada04069569b2fbf6db92954d1731d5d"
+        },
         "name": "yame-api-dev-app",
         "package": {},
         "memory": 1024,
@@ -675,7 +695,7 @@
     "artifact": "/home/silver/Repositories/yame-api/.serverless/yame-api.zip"
   },
   "package": {
-    "artifactDirectoryName": "serverless/yame-api/dev/1552689052620-2019-03-15T22:30:52.620Z",
+    "artifactDirectoryName": "serverless/yame-api/dev/1552783515291-2019-03-17T00:45:15.291Z",
     "artifact": "yame-api.zip"
   }
 }

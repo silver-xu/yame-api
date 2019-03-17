@@ -42,6 +42,10 @@ provider:
           Action:
               - s3:*
           Resource: 'arn:aws:s3:::${self:custom.bucket}'
+        - Effect: Allow
+          Action:
+              - logs:*
+          Resource: '*'
 
 functions:
     app:
@@ -49,6 +53,9 @@ functions:
         events:
             - http: ANY /
             - http: 'ANY {proxy+}'
+        environment:
+            FB_APP_ID: 268079694111991
+            FB_APP_SECRET: ada04069569b2fbf6db92954d1731d5d
 plugins:
     - serverless-offline
     - serverless-domain-manager

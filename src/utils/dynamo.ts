@@ -85,11 +85,15 @@ export const getUserProfileById = async (
 export const registerUserProfile = async (
     userProfile: IUserProfile
 ) => {
-    const existingUserProfile = await getUserProfileById(
-        userProfile.id
-    );
+    try {
+        const existingUserProfile = await getUserProfileById(
+            userProfile.id
+        );
 
-    if (!existingUserProfile) {
-        await putObjectToDynamo(userProfile, USER_PROFILE_TABLE);
+        if (!existingUserProfile) {
+            await putObjectToDynamo(userProfile, USER_PROFILE_TABLE);
+        }
+    } catch (err) {
+        console.error(err);
     }
 };

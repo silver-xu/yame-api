@@ -2,8 +2,7 @@ import fetch from 'node-fetch';
 import { IFacebookAuthResponse } from '../types';
 import { getFetchUrl } from '../utils/get-fetch-url';
 
-const APP_ID = '566204683881459';
-const APP_SECRET = '2dc8e362f8a9025f82008b1ea495c24c';
+const { FB_APP_ID, FB_APP_SECRET } = process.env;
 
 const FB_ACCESS_TOKEN_URL =
     'https://graph.facebook.com/oauth/access_token';
@@ -22,27 +21,58 @@ const getUsername = async (
         access_token: appAccessToken
     };
 
-    const userProfileResponse = await fetch(
-        getFetchUrl(`${FB_USER_PROFILE_URL}/${userId}`, params)
-    );
+    try {
+        const userProfileResponse = await fetch(
+            getFetchUrl(`${FB_USER_PROFILE_URL}/${userId}`, params)
+        );
 
-    const userProfileDataResponse = await userProfileResponse.json();
-    return userProfileDataResponse.name;
+        const userProfileDataResponse = await userProfileResponse.json();
+
+        if (
+            userProfileResponse.status >= 400 &&
+            userProfileResponse.status < 600
+        ) {
+            throw new Error(
+                JSON.stringify({
+                    params,
+                    userProfileDataResponse
+                })
+            );
+        }
+        return userProfileDataResponse.name;
+    } catch (e) {
+        console.error(e);
+        throw e;
+    }
 };
 
 export const obtainAppToken = async () => {
     const params = {
-        client_id: APP_ID,
-        client_secret: APP_SECRET,
+        client_id: FB_APP_ID,
+        client_secret: FB_APP_SECRET,
         grant_type: 'client_credentials'
     };
 
-    const response = await fetch(
-        getFetchUrl(FB_ACCESS_TOKEN_URL, params)
-    );
-    const responseData = await response.json();
+    try {
+        const url = getFetchUrl(FB_ACCESS_TOKEN_URL, params);
+        const response = await fetch(url);
 
-    return responseData.access_token;
+        const responseData = await response.json();
+
+        if (response.status >= 400 && response.status < 600) {
+            throw new Error(
+                JSON.stringify({
+                    params,
+                    responseData
+                })
+            );
+        }
+
+        return responseData.access_token;
+    } catch (e) {
+        console.error(e);
+        throw e;
+    }
 };
 
 export const loginUser = async (
@@ -63,24 +93,44 @@ export const loginUser = async (
         access_token: appAccessToken
     };
 
-    const tokenResponse = await fetch(
-        getFetchUrl(FB_INSPECT_TOKEN_URL, params)
-    );
-    const tokenDataResponse = await tokenResponse.json();
+    try {
+        const url = getFetchUrl(FB_INSPECT_TOKEN_URL, params);
+        const tokenResponse = await fetch(url);
 
-    const id = tokenDataResponse.data.user_id;
-    const name = await getUsername(
-        tokenDataResponse.data.user_id,
-        appAccessToken
-    );
+        const tokenDataResponse = await tokenResponse.json();
 
-    const authResponse = {
-        isValid: tokenDataResponse.data.is_valid,
-        id,
-        name,
-        expiryDate: new Date(tokenDataResponse.data.expires_at * 1000)
-    };
+        if (
+            tokenDataResponse.status >= 400 &&
+            tokenDataResponse.status < 600
+        ) {
+            throw new Error(
+                JSON.stringify({
+                    params,
+                    tokenDataResponse
+                })
+            );
+        }
 
-    authResponseCache[userAuthToken] = authResponse;
-    return authResponse;
+        const id = tokenDataResponse.data.user_id;
+
+        const name = await getUsername(
+            tokenDataResponse.data.user_id,
+            appAccessToken
+        );
+
+        const authResponse = {
+            isValid: tokenDataResponse.data.is_valid,
+            id,
+            name,
+            expiryDate: new Date(
+                tokenDataResponse.data.expires_at * 1000
+            )
+        };
+
+        authResponseCache[userAuthToken] = authResponse;
+        return authResponse;
+    } catch (e) {
+        console.error(e);
+        throw e;
+    }
 };
