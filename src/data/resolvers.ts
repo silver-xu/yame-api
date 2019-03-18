@@ -9,64 +9,41 @@ import {
 } from '../services/doc-service';
 import {
     IDocMutation,
+    IDocRepo,
     IDocRepoMutation,
     IPublishResult
 } from '../types';
-
-const MOCK_MODE = false;
-const mockDocRepo = {
-    docs: [
-        {
-            id: 'test 1',
-            docName: 'test 1 name',
-            content: 'test 1 content',
-            lastModified: new Date()
-        },
-        {
-            id: 'test 2',
-            docName: 'test 2 name',
-            content: 'test 2 content',
-            lastModified: new Date()
-        }
-    ]
-};
-
-const mockDoc = {
-    id: 'test 1',
-    docName: 'test 1 name',
-    content:
-        '# Heading 1\r\n## Heading 2\r\n### Heading 3\r\ncontents',
-    lastModified: new Date()
-};
-
-const mockDefaultDoc = {
-    namePrefix: 'My document',
-    defaultContent: 'defualtContent'
-};
+import { getDocAccessesByIds } from '../utils/dynamo';
 
 export const resolvers = {
     DateTime: GraphQLDateTime,
     Query: {
         async docRepo(_: any, args: any, context: any) {
-            return !MOCK_MODE
-                ? await getDocRepoForUser(context.user.id)
-                : Promise.resolve(mockDocRepo);
+            return await getDocRepoForUser(context.user.id);
         },
         async doc(_: any, args: any, context: any) {
-            return !MOCK_MODE
-                ? await getDocForUser(context.user.id, args.docId)
-                : Promise.resolve(mockDoc);
+            return !(await getDocForUser(
+                context.user.id,
+                args.docId
+            ));
         },
-        oneOffKey(_: any, args: any, context: any) {
+        oneOffKey(_: any, __: any, context: any) {
             return uuidv4();
         },
-        currentUser(_: any, args: any, context: any) {
+        currentUser(_: any, __: any, context: any) {
             return context.user;
         },
-        async defaultDoc(_: any, args: any, context: any) {
-            return !MOCK_MODE
-                ? await getDefaultDoc()
-                : Promise.resolve(mockDefaultDoc);
+        async defaultDoc(_: any, __: any, context: any) {
+            return !(await getDefaultDoc());
+        },
+        async docAccesses(_: any, __: any, context: any) {
+            const docRepo: IDocRepo = await getDocRepoForUser(
+                context.user.id
+            );
+
+            return await getDocAccessesByIds(
+                docRepo.docs.map(doc => doc.id)
+            );
         }
     },
     Mutation: {

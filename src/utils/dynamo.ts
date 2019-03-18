@@ -45,6 +45,22 @@ export const getDocAccessById = async (
     return item as IDocAccess;
 };
 
+export const getDocAccessesByIds = async (
+    ids: string[]
+): Promise<IDocAccess[]> => {
+    const dynamoParams = {
+        TableName: DOCUMENT_ACCESS_TABLE,
+        ProjectionExpression:
+            'id, userId, permalink, generatePDF, generateWord, secret, protectionMode',
+        KeyConditionExpression: 'id in IN (' + ids.join(',') + ')',
+        ExpressionAttributeValues: {
+            ids
+        }
+    };
+    const result = await dynamoDb.query(dynamoParams).promise();
+    return result.Items as IDocAccess[];
+};
+
 export const getDocAccess = async (
     userId: string,
     permalink: string

@@ -9,8 +9,9 @@ type Query {
   oneOffKey: String
   currentUser: User
   defaultDoc: DefaultDoc
+  docAccesses: DocAccess[]
   doc(docId:String): Doc
-  docByPermalink(username:String, permalink: String): Doc  
+  docByPermalink(username:String, permalink: String): Doc
 }
 
 type Mutation {
@@ -55,7 +56,6 @@ type DocAccess {
   generateWord: Boolean
   secret: String
   protectionMode: String
-  lastPublishedHash: String
 }
 
 input DocRepoMutation{
