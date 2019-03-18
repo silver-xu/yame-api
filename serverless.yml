@@ -54,8 +54,8 @@ functions:
             - http: ANY /
             - http: 'ANY {proxy+}'
         environment:
-            FB_APP_ID: $(env:FB_APP_ID)
-            FB_APP_SECRET: $(env:FB_APP_SECRET)
+            FB_APP_ID: ${env:FB_APP_ID}
+            FB_APP_SECRET: ${env:FB_APP_SECRET}
 plugins:
     - serverless-offline
     - serverless-domain-manager
