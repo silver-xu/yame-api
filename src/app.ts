@@ -10,6 +10,7 @@ import {
 } from './services/facebook-service';
 import { UserType } from './types';
 import { registerUserProfile } from './utils/dynamo';
+import { normalizeStrForUrl } from './utils/string';
 
 export const createApp = async () => {
     const app = express();
@@ -22,22 +23,7 @@ export const createApp = async () => {
         resolvers,
         context: async ({ req }) => {
             const token = req.headers.authorization || '';
-            if (token === '') {
-                const authToken = uuidv4();
-                const firstTimeAnonymousUser = {
-                    id: authToken,
-                    userType: UserType.Anonymous,
-                    authToken
-                };
-
-                await registerUserProfile({
-                    id: authToken,
-                    username: authToken,
-                    userType: UserType.Anonymous
-                });
-
-                return { user: firstTimeAnonymousUser };
-            } else if (token.startsWith('fb-')) {
+            if (token.startsWith('fb-')) {
                 const authToken = token.substring(3);
 
                 const facebookAuthResponse = await loginUser(
@@ -52,23 +38,20 @@ export const createApp = async () => {
                     name: facebookAuthResponse.name
                 };
 
-                await registerUserProfile({
-                    id: facebookUser.id,
-                    username: facebookUser.name
-                        .toLowerCase()
-                        .split(' ')
-                        .join('-'),
-                    userType: UserType.Facebook
-                });
-
                 return { user: facebookUser };
             } else {
-                const repeatingAnonymousUser = {
+                await registerUserProfile({
+                    id: token,
+                    username: token,
+                    userType: UserType.Anonymous
+                });
+
+                const anonymousUser = {
                     id: token,
                     userType: UserType.Anonymous,
                     authToken: token
                 };
-                return { user: repeatingAnonymousUser };
+                return { user: anonymousUser };
             }
         }
     });

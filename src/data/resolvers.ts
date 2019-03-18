@@ -7,7 +7,11 @@ import {
     mutateDocRepoForUser,
     publishDocForUser
 } from '../services/doc-service';
-import { IDocMutation, IDocRepoMutation } from '../types';
+import {
+    IDocMutation,
+    IDocRepoMutation,
+    IPublishResult
+} from '../types';
 
 const MOCK_MODE = false;
 const mockDocRepo = {
@@ -88,13 +92,15 @@ export const resolvers = {
             _: any,
             { docMutation }: { docMutation: IDocMutation },
             context: any
-        ): Promise<boolean> {
+        ): Promise<IPublishResult | undefined> {
             try {
-                await publishDocForUser(context.user.id, docMutation);
-                return true;
+                return await publishDocForUser(
+                    context.user.id,
+                    docMutation
+                );
             } catch (error) {
                 console.log(error);
-                return Promise.resolve(false);
+                return Promise.resolve(undefined);
             }
         }
     }

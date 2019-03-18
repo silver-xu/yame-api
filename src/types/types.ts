@@ -57,3 +57,8 @@ export interface IUserProfile {
     username: string;
     userType: UserType;
 }
+
+export interface IPublishResult {
+    normalizedUsername: string;
+    permalink: string;
+}

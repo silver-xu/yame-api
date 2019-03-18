@@ -26,6 +26,25 @@ export const updateDocAccess = async (documentAccess: IDocAccess) => {
     await putObjectToDynamo(documentAccess, DOCUMENT_ACCESS_TABLE);
 };
 
+export const getDocAccessById = async (
+    id: string
+): Promise<IDocAccess | null> => {
+    const dynamoParams = {
+        TableName: DOCUMENT_ACCESS_TABLE,
+        ProjectionExpression:
+            'id, userId, permalink, generatePDF, generateWord, secret, protectionMode',
+        KeyConditionExpression: 'id = :did',
+        ExpressionAttributeValues: {
+            ':did': id
+        }
+    };
+
+    const result = await dynamoDb.query(dynamoParams).promise();
+    const item = result.Items.length > 0 ? result.Items[0] : null;
+
+    return item as IDocAccess;
+};
+
 export const getDocAccess = async (
     userId: string,
     permalink: string
@@ -78,7 +97,6 @@ export const getUserProfileById = async (
     };
     const result = await dynamoDb.query(dynamoParams).promise();
     const item = result.Items.length > 0 ? result.Items[0] : null;
-
     return item as IUserProfile;
 };
 

@@ -15,7 +15,7 @@ type Query {
 
 type Mutation {
   updateDocRepo(docRepoMutation: DocRepoMutation): Boolean
-  publishDoc(docMutation: DocMutation): Boolean
+  publishDoc(docMutation: DocMutation): PublishResult
   updateDocAccess(docAccessMutation: DocAccessMutation): Boolean
 }
 
@@ -37,9 +37,14 @@ type Doc {
 }
 
 type User {
-  userType: UserType!
-  authToken: String!
+  userType: UserType
+  authToken: String
   id: String!
+}
+
+type PublishResult{
+  normalizedUsername: String
+  permalink: String
 }
 
 type DocAccess {

@@ -3,13 +3,20 @@ import {
     IDefaultDoc,
     IDoc,
     IDocRepo,
-    IDocRepoMutation
+    IDocRepoMutation,
+    IPublishResult
 } from '../types';
 export {
     updateDocAccess,
     registerUserProfile
 } from '../utils/dynamo';
-import { getDocAccess, getUserProfileByName } from '../utils/dynamo';
+import {
+    getDocAccess,
+    getDocAccessById,
+    getUserProfileById,
+    getUserProfileByName,
+    updateDocAccess
+} from '../utils/dynamo';
 
 import {
     deleteObjectFromS3,
@@ -17,6 +24,7 @@ import {
     listKeysFromS3,
     putObjectToS3
 } from '../utils/s3';
+import { normalizeStrForUrl } from '../utils/string';
 
 const BUCKET = 'yame-dev';
 
@@ -89,12 +97,42 @@ export const mutateDocRepoForUser = async (
     await Promise.all([newAndUpdateDocsTask, deleteDocsTask]);
 };
 
-export const publishDocForUser = async (id: string, doc: IDoc) => {
+export const publishDocForUser = async (
+    id: string,
+    doc: IDoc
+): Promise<IPublishResult> => {
     await putObjectToS3(
         BUCKET,
         `${id}/published/${doc.id}.json`,
         doc
     );
+
+    const userProfile = await getUserProfileById(id);
+    const docAccess = await getDocAccessById(doc.id);
+
+    if (!docAccess) {
+        const permalink = normalizeStrForUrl(doc.docName);
+
+        await updateDocAccess({
+            id: doc.id,
+            userId: id,
+            permalink,
+            generatePDF: true,
+            generateWord: true,
+            secret: undefined,
+            protectionMode: undefined
+        });
+
+        return {
+            normalizedUsername: userProfile.username,
+            permalink
+        };
+    } else {
+        return {
+            normalizedUsername: userProfile.username,
+            permalink: docAccess.permalink
+        };
+    }
 };
 
 export const getDocByPermalink = async (
