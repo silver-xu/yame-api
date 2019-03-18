@@ -52,7 +52,9 @@ functions:
         handler: dist/handler.handler
         events:
             - http: ANY /
+              cors: true
             - http: 'ANY {proxy+}'
+              cors: true
 plugins:
     - serverless-offline
     - serverless-domain-manager
