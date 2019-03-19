@@ -39,17 +39,17 @@ export const resolvers = {
         },
         async docAccess(
             _: any,
-            { docId }: { docId: string },
+            { id }: { id: string },
             context: any
         ) {
-            return await getDocAccessById(docId);
+            return await getDocAccessById(id);
         },
         async publishResult(
             _: any,
-            { docId }: { docId: string },
+            { id }: { id: string },
             context: any
         ) {
-            return await getPublishResult(docId, context.user.id);
+            return await getPublishResult(id, context.user.id);
         }
     },
     Mutation: {
