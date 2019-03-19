@@ -13,7 +13,7 @@ import {
     IDocRepoMutation,
     IPublishResult
 } from '../types';
-import { getDocAccessesByIds } from '../utils/dynamo';
+import { getDocAccessById } from '../utils/dynamo';
 
 export const resolvers = {
     DateTime: GraphQLDateTime,
@@ -36,14 +36,12 @@ export const resolvers = {
         async defaultDoc(_: any, __: any, context: any) {
             return !(await getDefaultDoc());
         },
-        async docAccesses(_: any, __: any, context: any) {
-            const docRepo: IDocRepo = await getDocRepoForUser(
-                context.user.id
-            );
-
-            return await getDocAccessesByIds(
-                docRepo.docs.map(doc => doc.id)
-            );
+        async docAccess(
+            _: any,
+            { docId }: { docId: string },
+            context: any
+        ) {
+            return await getDocAccessById(docId);
         }
     },
     Mutation: {

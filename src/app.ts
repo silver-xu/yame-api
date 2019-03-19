@@ -10,7 +10,6 @@ import {
 } from './services/facebook-service';
 import { UserType } from './types';
 import { registerUserProfile } from './utils/dynamo';
-import { normalizeStrForUrl } from './utils/string';
 
 export const createApp = async () => {
     const app = express();
