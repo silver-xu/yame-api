@@ -59,6 +59,8 @@ export const getDocAccessesByIds = async (
             'id in IN (' + Object.keys(idsObject).join(', ') + ')',
         ExpressionAttributeValues: idsObject
     };
+
+    console.log(dynamoParams);
     const result = await dynamoDb.query(dynamoParams).promise();
     return result.Items as IDocAccess[];
 };
