@@ -3,6 +3,7 @@ import {
     IDocumentAccess as IDocAccess,
     IUserProfile
 } from '../types';
+import { arrayToAssociativeArray } from './arr';
 const dynamoDb = new AWS.DynamoDB.DocumentClient({
     region: 'ap-southeast-2'
 });
@@ -48,14 +49,15 @@ export const getDocAccessById = async (
 export const getDocAccessesByIds = async (
     ids: string[]
 ): Promise<IDocAccess[]> => {
+    const idsObject = arrayToAssociativeArray<string>(ids);
+
     const dynamoParams = {
         TableName: DOCUMENT_ACCESS_TABLE,
         ProjectionExpression:
             'id, userId, permalink, generatePDF, generateWord, secret, protectionMode',
-        KeyConditionExpression: 'id in IN (' + ids.join(',') + ')',
-        ExpressionAttributeValues: {
-            ids
-        }
+        KeyConditionExpression:
+            'id in IN (' + Object.keys(idsObject).join(', ') + ')',
+        ExpressionAttributeValues: idsObject
     };
     const result = await dynamoDb.query(dynamoParams).promise();
     return result.Items as IDocAccess[];
