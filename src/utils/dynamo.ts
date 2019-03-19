@@ -56,11 +56,10 @@ export const getDocAccessesByIds = async (
         ProjectionExpression:
             'id, userId, permalink, generatePDF, generateWord, secret, protectionMode',
         KeyConditionExpression:
-            'id in IN (' + Object.keys(idsObject).join(', ') + ')',
+            'id in (' + Object.keys(idsObject).join(', ') + ')',
         ExpressionAttributeValues: idsObject
     };
 
-    console.log(dynamoParams);
     const result = await dynamoDb.query(dynamoParams).promise();
     return result.Items as IDocAccess[];
 };
