@@ -42,7 +42,7 @@ export interface IFacebookAuthResponse {
     expiryDate: Date;
 }
 
-export interface IDocumentAccess {
+export interface IDocAccess {
     id: string;
     userId: string;
     permalink: string;

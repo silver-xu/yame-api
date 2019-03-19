@@ -1,8 +1,5 @@
 import AWS from 'aws-sdk';
-import {
-    IDocumentAccess as IDocAccess,
-    IUserProfile
-} from '../types';
+import { IDocAccess, IUserProfile } from '../types';
 
 const dynamoDb = new AWS.DynamoDB.DocumentClient({
     region: 'ap-southeast-2'

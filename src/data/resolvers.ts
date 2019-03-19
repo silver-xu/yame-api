@@ -4,6 +4,7 @@ import {
     getDefaultDoc,
     getDocForUser,
     getDocRepoForUser,
+    getPublishResult,
     mutateDocRepoForUser,
     publishDocForUser
 } from '../services/doc-service';
@@ -42,6 +43,13 @@ export const resolvers = {
             context: any
         ) {
             return await getDocAccessById(docId);
+        },
+        async publishResult(
+            _: any,
+            { docId }: { docId: string },
+            context: any
+        ) {
+            return await getPublishResult(docId, context.user.id);
         }
     },
     Mutation: {

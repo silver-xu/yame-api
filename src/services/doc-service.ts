@@ -2,6 +2,7 @@ import uuidv4 from 'uuid';
 import {
     IDefaultDoc,
     IDoc,
+    IDocAccess,
     IDocRepo,
     IDocRepoMutation,
     IPublishResult
@@ -201,4 +202,17 @@ const deleteDocsForUser = async (
             );
         })
     );
+};
+
+export const getPublishResult = async (
+    docId: string,
+    userId: string
+): Promise<IPublishResult | null> => {
+    const docAccess = await getDocAccessById(docId);
+    const userProfile = await getUserProfileById(userId);
+
+    return {
+        normalizedUsername: userProfile.username,
+        permalink: docAccess.permalink
+    };
 };

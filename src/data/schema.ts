@@ -10,6 +10,7 @@ type Query {
   currentUser: User
   defaultDoc: DefaultDoc
   docAccess(id:String): DocAccess
+  publishResult(id:String): PublishResult
   doc(docId:String): Doc
   docByPermalink(username:String, permalink: String): Doc
 }
