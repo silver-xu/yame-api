@@ -9,7 +9,7 @@ type Query {
   oneOffKey: String
   currentUser: User
   defaultDoc: DefaultDoc
-  docAccesses: DocAccess[]
+  docAccesses: [DocAccess]
   doc(docId:String): Doc
   docByPermalink(username:String, permalink: String): Doc
 }
