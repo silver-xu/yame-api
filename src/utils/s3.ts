@@ -1,9 +1,9 @@
 import AWS, { AWSError } from 'aws-sdk';
-import { PromiseResult } from 'aws-sdk/lib/request';
 import {
-    PutObjectOutput,
-    DeleteObjectOutput
+    DeleteObjectOutput,
+    PutObjectOutput
 } from 'aws-sdk/clients/s3';
+import { PromiseResult } from 'aws-sdk/lib/request';
 const s3 = new AWS.S3();
 
 export const getObjectFromS3 = async <T>(

@@ -34,10 +34,7 @@ export const getDefaultDoc = async (): Promise<IDefaultDoc> => {
         BUCKET,
         'default.json'
     );
-    return {
-        ...defaultDoc,
-        defaultContent: defaultDoc.defaultContent
-    };
+    return defaultDoc;
 };
 
 export const getDocRepoForUser = async (
