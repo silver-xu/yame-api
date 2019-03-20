@@ -19,6 +19,7 @@ type Mutation {
   updateDocRepo(docRepoMutation: DocRepoMutation): Boolean
   publishDoc(docMutation: DocMutation): PublishResult
   updateDocAccess(docAccessMutation: DocAccessMutation): Boolean
+  updatePermalink(id:String, permalink:String): Boolean
 }
 
 type DocRepo {

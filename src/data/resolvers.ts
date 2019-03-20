@@ -6,11 +6,11 @@ import {
     getDocRepoForUser,
     getPublishResult,
     mutateDocRepoForUser,
-    publishDocForUser
+    publishDocForUser,
+    updatePermalink
 } from '../services/doc-service';
 import {
     IDocMutation,
-    IDocRepo,
     IDocRepoMutation,
     IPublishResult
 } from '../types';
@@ -84,6 +84,19 @@ export const resolvers = {
             } catch (error) {
                 console.log(error);
                 return Promise.resolve(undefined);
+            }
+        },
+        async updatePermalink(
+            _: any,
+            { id, permalink }: { id: string; permalink: string },
+            context: any
+        ): Promise<boolean> {
+            try {
+                await updatePermalink(id, permalink);
+                return true;
+            } catch (error) {
+                console.log(error);
+                return Promise.resolve(false);
             }
         }
     }

@@ -16,7 +16,8 @@ import {
     getDocAccessById,
     getUserProfileById,
     getUserProfileByName,
-    updateDocAccess
+    updateDocAccess,
+    putObjectToDynamo
 } from '../utils/dynamo';
 
 import {
@@ -129,6 +130,18 @@ export const publishDocForUser = async (
             normalizedUsername: userProfile.username,
             permalink: docAccess.permalink
         };
+    }
+};
+
+export const updatePermalink = async (
+    id: string,
+    permalink: string
+) => {
+    const docAccess = await getDocAccessById(id);
+
+    if (docAccess) {
+        docAccess.permalink = permalink;
+        await updateDocAccess(docAccess);
     }
 };
 
