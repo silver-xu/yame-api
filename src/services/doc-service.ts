@@ -34,6 +34,7 @@ export const getDefaultDoc = async (): Promise<IDefaultDoc> => {
         BUCKET,
         'default.json'
     );
+
     return defaultDoc;
 };
 
@@ -60,8 +61,6 @@ export const getDocRepoForUser = async (
         ]);
 
         docKeys = [`${id}/docs/${docId}.json`];
-
-        console.log(docKeys);
     }
 
     const docs = await Promise.all(
@@ -152,7 +151,6 @@ export const getDocForUser = async (
     id: string,
     docId: string
 ): Promise<IDoc> => {
-    console.log(docId);
     const doc = await getObjectFromS3<IDoc>(
         BUCKET,
         `${id}/docs/${docId}.json`

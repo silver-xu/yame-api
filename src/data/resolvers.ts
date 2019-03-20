@@ -35,7 +35,7 @@ export const resolvers = {
             return context.user;
         },
         async defaultDoc(_: any, __: any, context: any) {
-            return !(await getDefaultDoc());
+            return await getDefaultDoc();
         },
         async docAccess(
             _: any,

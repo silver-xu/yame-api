@@ -6,7 +6,6 @@
     "scripts": {
         "start": "node --nolazy -r ts-node/register src/index.ts",
         "start:watch": "nodemon --inspect",
-        "start:prod": "nodemon --inspect",
         "build": "tsc",
         "format": "prettier --write '**/*.{ts,json,yml,yaml}'",
         "format:check": "prettier --list-different '**/*.{ts,json,yml,yaml}'",

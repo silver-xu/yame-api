@@ -6,7 +6,6 @@ export FB_APP_ID
 export FB_APP_SECRET
 export STAGE
 
-
 start: node_modules
 	export STAGE=local && npm start
 
