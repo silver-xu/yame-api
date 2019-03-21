@@ -17,7 +17,7 @@ import {
     getUserProfileById,
     getUserProfileByName,
     updateDocAccess,
-    putObjectToDynamo
+    getDocAccesses
 } from '../utils/dynamo';
 
 import {
@@ -110,11 +110,30 @@ export const publishDocForUser = async (
 
     if (!docAccess) {
         const permalink = normalizeStrForUrl(doc.docName);
+        let settledPermalink = permalink;
+
+        let docAccessWithSamePermalink = await getDocAccess(
+            id,
+            permalink
+        );
+
+        for (
+            let counter = 1;
+            !!docAccessWithSamePermalink;
+            counter++
+        ) {
+            settledPermalink = `${permalink}-${counter}`;
+            docAccessWithSamePermalink = await getDocAccess(
+                id,
+                settledPermalink
+            );
+            counter++;
+        }
 
         await updateDocAccess({
             id: doc.id,
             userId: id,
-            permalink,
+            permalink: settledPermalink,
             generatePDF: true,
             generateWord: true,
             secret: undefined,
@@ -123,7 +142,7 @@ export const publishDocForUser = async (
 
         return {
             normalizedUsername: userProfile.username,
-            permalink
+            permalink: settledPermalink
         };
     } else {
         return {
@@ -140,12 +159,25 @@ export const updatePermalink = async (
     const docAccess = await getDocAccessById(id);
 
     if (docAccess) {
+        const docAcccessesWithSamePermalink = await getDocAccesses(
+            docAccess.userId,
+            permalink
+        );
+
+        if (docAcccessesWithSamePermalink.length > 1) {
+            return false;
+        }
+
         docAccess.permalink = permalink;
         await updateDocAccess(docAccess);
+
+        return true;
     }
+
+    return false;
 };
 
-export const getDocByPermalink = async (
+export const getDocByNameAndPermalink = async (
     username: string,
     permalink: string
 ) => {

@@ -46,9 +46,18 @@ export const getDocAccessById = async (
 export const getDocAccess = async (
     userId: string,
     permalink: string
-): Promise<IDocAccess> => {
+): Promise<IDocAccess | null> => {
+    const items = await getDocAccesses(userId, permalink);
+    return items && items.length > 0 ? items[0] : null;
+};
+
+export const getDocAccesses = async (
+    userId: string,
+    permalink: string
+): Promise<IDocAccess[]> => {
     const dynamoParams = {
         TableName: DOCUMENT_ACCESS_TABLE,
+        IndexName: 'userIdPermalinkIndex',
         ProjectionExpression:
             'id, userId, permalink, generatePDF, generateWord, secret, protectionMode',
         KeyConditionExpression:
@@ -60,9 +69,8 @@ export const getDocAccess = async (
     };
 
     const result = await dynamoDb.query(dynamoParams).promise();
-    const item = result.Items.length > 0 ? result.Items[0] : null;
 
-    return item as IDocAccess;
+    return result.Items as IDocAccess[];
 };
 
 export const getUserProfileByName = async (

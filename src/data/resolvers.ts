@@ -92,8 +92,7 @@ export const resolvers = {
             context: any
         ): Promise<boolean> {
             try {
-                await updatePermalink(id, permalink);
-                return true;
+                return await updatePermalink(id, permalink);
             } catch (error) {
                 console.log(error);
                 return Promise.resolve(false);
