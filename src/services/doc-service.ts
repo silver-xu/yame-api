@@ -2,7 +2,6 @@ import uuidv4 from 'uuid';
 import {
     IDefaultDoc,
     IDoc,
-    IDocAccess,
     IDocRepo,
     IDocRepoMutation,
     IPublishResult
@@ -14,10 +13,10 @@ export {
 import {
     getDocAccess,
     getDocAccessById,
+    getDocAccesses,
     getUserProfileById,
     getUserProfileByName,
-    updateDocAccess,
-    getDocAccesses
+    updateDocAccess
 } from '../utils/dynamo';
 
 import {

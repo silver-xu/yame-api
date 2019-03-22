@@ -26,14 +26,7 @@ provider:
               - dynamodb:Query
               - dynamodb:UpdateItem
               - dynamodb:PutItem
-          Resource: 'arn:aws:dynamodb:${self:provider.region, self:provider.region}:*:table/DocumentAccess'
-        - Effect: Allow
-          Action:
-              - dynamodb:GetItem
-              - dynamodb:Query
-              - dynamodb:UpdateItem
-              - dynamodb:PutItem
-          Resource: 'arn:aws:dynamodb:${self:provider.region, self:provider.region}:*:table/UserProfile'
+          Resource: 'arn:aws:dynamodb:${self:provider.region, self:provider.region}:*:table/*'
         - Effect: Allow
           Action:
               - s3:*
