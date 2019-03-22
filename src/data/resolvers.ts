@@ -23,10 +23,7 @@ export const resolvers = {
             return await getDocRepoForUser(context.user.id);
         },
         async doc(_: any, args: any, context: any) {
-            return !(await getDocForUser(
-                context.user.id,
-                args.docId
-            ));
+            return await getDocForUser(context.user.id, args.docId);
         },
         oneOffKey(_: any, __: any, context: any) {
             return uuidv4();

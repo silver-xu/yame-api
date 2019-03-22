@@ -201,10 +201,7 @@ export const getDocForUser = async (
         `${id}/docs/${docId}.json`
     );
 
-    return {
-        ...doc,
-        content: doc.content
-    };
+    return doc;
 };
 
 const getDocByKey = async (key: string): Promise<IDoc> => {
