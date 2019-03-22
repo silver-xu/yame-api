@@ -78,6 +78,7 @@ export const getUserProfileByName = async (
 ): Promise<IUserProfile> => {
     const dynamoParams = {
         TableName: USER_PROFILE_TABLE,
+        IndexName: 'nameIndex',
         ProjectionExpression: 'id, username, userType',
         KeyConditionExpression: 'username = :uname',
         ExpressionAttributeValues: {

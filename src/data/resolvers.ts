@@ -4,6 +4,7 @@ import {
     getDefaultDoc,
     getDocForUser,
     getDocRepoForUser,
+    getPublishedDocByNameAndPermalink,
     getPublishResult,
     mutateDocRepoForUser,
     publishDocForUser,
@@ -47,6 +48,19 @@ export const resolvers = {
             context: any
         ) {
             return await getPublishResult(id, context.user.id);
+        },
+        async docByPermalink(
+            _: any,
+            {
+                username,
+                permalink
+            }: { username: string; permalink: string },
+            context: any
+        ) {
+            return await getPublishedDocByNameAndPermalink(
+                username,
+                permalink
+            );
         }
     },
     Mutation: {

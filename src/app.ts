@@ -10,6 +10,7 @@ import {
 } from './services/facebook-service';
 import { UserType } from './types';
 import { registerUserProfile } from './utils/dynamo';
+import { normalizeStrForUrl } from './utils/string';
 
 export const createApp = async () => {
     const app = express();
@@ -34,8 +35,16 @@ export const createApp = async () => {
                     id: facebookAuthResponse.id,
                     userType: UserType.Facebook,
                     authToken,
-                    name: facebookAuthResponse.name
+                    name: normalizeStrForUrl(
+                        facebookAuthResponse.name
+                    )
                 };
+
+                await registerUserProfile({
+                    id: facebookUser.id,
+                    username: facebookUser.name,
+                    userType: UserType.Facebook
+                });
 
                 return { user: facebookUser };
             } else {

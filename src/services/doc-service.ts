@@ -176,7 +176,7 @@ export const updatePermalink = async (
     return false;
 };
 
-export const getDocByNameAndPermalink = async (
+export const getPublishedDocByNameAndPermalink = async (
     username: string,
     permalink: string
 ) => {
@@ -187,7 +187,7 @@ export const getDocByNameAndPermalink = async (
     );
 
     return await getDocByKey(
-        `${userProfile.id}/${documentAccess.id}`
+        `${userProfile.id}/published/${documentAccess.id}.json`
     );
 };
 
