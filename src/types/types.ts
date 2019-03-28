@@ -7,7 +7,7 @@ export interface IDoc {
 
 export interface IDocRepo {
     docs: IDoc[];
-    publishedDocs: IDoc[];
+    publishedDocIds: string[];
 }
 
 export interface IDefaultDoc {

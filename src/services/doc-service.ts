@@ -73,7 +73,9 @@ export const getDocRepoForUser = async (
 
     return {
         docs,
-        publishedDocs
+        publishedDocIds: publishedDocs.map(
+            publishDoc => publishDoc.id
+        )
     };
 };
 
@@ -181,6 +183,7 @@ export const getPublishedDocByNameAndPermalink = async (
     permalink: string
 ) => {
     const userProfile = await getUserProfileByName(username);
+
     const documentAccess = await getDocAccess(
         userProfile.id,
         permalink

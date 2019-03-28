@@ -22,44 +22,46 @@ export const createApp = async () => {
         schema,
         resolvers,
         context: async ({ req }) => {
-            const token = req.headers.authorization || '';
-            if (token.startsWith('fb-')) {
-                const authToken = token.substring(3);
+            const token = req.headers.authorization;
+            if (token) {
+                if (token.startsWith('fb-')) {
+                    const authToken = token.substring(3);
 
-                const facebookAuthResponse = await loginUser(
-                    authToken,
-                    fbAppAccessToken
-                );
+                    const facebookAuthResponse = await loginUser(
+                        authToken,
+                        fbAppAccessToken
+                    );
 
-                const facebookUser = {
-                    id: facebookAuthResponse.id,
-                    userType: UserType.Facebook,
-                    authToken,
-                    name: normalizeStrForUrl(
-                        facebookAuthResponse.name
-                    )
-                };
+                    const facebookUser = {
+                        id: facebookAuthResponse.id,
+                        userType: UserType.Facebook,
+                        authToken,
+                        name: normalizeStrForUrl(
+                            facebookAuthResponse.name
+                        )
+                    };
 
-                await registerUserProfile({
-                    id: facebookUser.id,
-                    username: facebookUser.name,
-                    userType: UserType.Facebook
-                });
+                    await registerUserProfile({
+                        id: facebookUser.id,
+                        username: facebookUser.name,
+                        userType: UserType.Facebook
+                    });
 
-                return { user: facebookUser };
-            } else {
-                await registerUserProfile({
-                    id: token,
-                    username: token,
-                    userType: UserType.Anonymous
-                });
+                    return { user: facebookUser };
+                } else {
+                    await registerUserProfile({
+                        id: token,
+                        username: token,
+                        userType: UserType.Anonymous
+                    });
 
-                const anonymousUser = {
-                    id: token,
-                    userType: UserType.Anonymous,
-                    authToken: token
-                };
-                return { user: anonymousUser };
+                    const anonymousUser = {
+                        id: token,
+                        userType: UserType.Anonymous,
+                        authToken: token
+                    };
+                    return { user: anonymousUser };
+                }
             }
         }
     });

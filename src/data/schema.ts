@@ -24,7 +24,7 @@ type Mutation {
 
 type DocRepo {
   docs: [Doc]
-  publishedDocs: [Doc]
+  publishedDocIds: [String]
 }
 
 type DefaultDoc{
