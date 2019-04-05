@@ -55,7 +55,7 @@ plugins:
 
 resources:
     Resources:
-        DocumentAccessTable:
+        DocPermalinksTable:
             Type: 'AWS::DynamoDB::Table'
             Properties:
                 AttributeDefinitions:
@@ -71,7 +71,7 @@ resources:
                 ProvisionedThroughput:
                     ReadCapacityUnits: 1
                     WriteCapacityUnits: 1
-                TableName: DocumentAccess
+                TableName: DocPermalinks
                 GlobalSecondaryIndexes:
                     - IndexName: userIdPermalinkIndex
                       KeySchema:

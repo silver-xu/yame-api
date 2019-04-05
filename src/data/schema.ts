@@ -9,17 +9,11 @@ type Query {
   oneOffKey: String
   currentUser: User
   defaultDoc: DefaultDoc
-  docAccess(id:String): DocAccess
-  publishResult(id:String): PublishResult
   doc(docId:String): Doc
-  docByPermalink(username:String, permalink: String): Doc
 }
 
 type Mutation {
   updateDocRepo(docRepoMutation: DocRepoMutation): Boolean
-  publishDoc(docMutation: DocMutation): PublishResult
-  updateDocAccess(docAccessMutation: DocAccessMutation): Boolean
-  updatePermalink(id:String, permalink:String): Boolean
 }
 
 type DocRepo {
@@ -37,27 +31,14 @@ type Doc {
   docName: String
   content: String
   lastModified: DateTime
+  published: Boolean
+  removed: Boolean
 }
 
 type User {
   userType: UserType
   authToken: String
   id: String!
-}
-
-type PublishResult{
-  normalizedUsername: String
-  permalink: String
-}
-
-type DocAccess {
-  id: String
-  userId: String
-  permalink: String
-  generatePDF: Boolean
-  generateWord: Boolean
-  secret: String
-  protectionMode: String
 }
 
 input DocRepoMutation{
@@ -71,17 +52,6 @@ input DocMutation{
   docName: String
   content: String
   lastModified: DateTime
-}
-
-input DocAccessMutation{
-  id: String
-  userId: String
-  permalink: String
-  generatePDF: Boolean
-  generateWord: Boolean
-  secret: String
-  protectionMode: String
-  lastPublishedHash: String
 }
 
 enum UserType {

@@ -4,18 +4,9 @@ import {
     getDefaultDoc,
     getDocForUser,
     getDocRepoForUser,
-    getPublishedDocByNameAndPermalink,
-    getPublishResult,
-    mutateDocRepoForUser,
-    publishDocForUser,
-    updatePermalink
+    mutateDocRepoForUser
 } from '../services/doc-service';
-import {
-    IDocMutation,
-    IDocRepoMutation,
-    IPublishResult
-} from '../types';
-import { getDocAccessById } from '../utils/dynamo';
+import { IDocRepoMutation } from '../types';
 
 export const resolvers = {
     DateTime: GraphQLDateTime,
@@ -34,33 +25,6 @@ export const resolvers = {
         },
         async defaultDoc(_: any, __: any, context: any) {
             return await getDefaultDoc();
-        },
-        async docAccess(
-            _: any,
-            { id }: { id: string },
-            context: any
-        ) {
-            return await getDocAccessById(id);
-        },
-        async publishResult(
-            _: any,
-            { id }: { id: string },
-            context: any
-        ) {
-            return await getPublishResult(id, context.user.id);
-        },
-        async docByPermalink(
-            _: any,
-            {
-                username,
-                permalink
-            }: { username: string; permalink: string },
-            context: any
-        ) {
-            return await getPublishedDocByNameAndPermalink(
-                username,
-                permalink
-            );
         }
     },
     Mutation: {
@@ -77,33 +41,6 @@ export const resolvers = {
                     docRepoMutation
                 );
                 return true;
-            } catch (error) {
-                console.log(error);
-                return Promise.resolve(false);
-            }
-        },
-        async publishDoc(
-            _: any,
-            { docMutation }: { docMutation: IDocMutation },
-            context: any
-        ): Promise<IPublishResult | undefined> {
-            try {
-                return await publishDocForUser(
-                    context.user.id,
-                    docMutation
-                );
-            } catch (error) {
-                console.log(error);
-                return Promise.resolve(undefined);
-            }
-        },
-        async updatePermalink(
-            _: any,
-            { id, permalink }: { id: string; permalink: string },
-            context: any
-        ): Promise<boolean> {
-            try {
-                return await updatePermalink(id, permalink);
             } catch (error) {
                 console.log(error);
                 return Promise.resolve(false);

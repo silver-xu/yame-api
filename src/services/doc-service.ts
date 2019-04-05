@@ -3,21 +3,11 @@ import {
     IDefaultDoc,
     IDoc,
     IDocRepo,
-    IDocRepoMutation,
-    IPublishResult
+    IDocRepoMutation
 } from '../types';
-export {
-    updateDocAccess,
-    registerUserProfile
-} from '../utils/dynamo';
-import {
-    getDocAccess,
-    getDocAccessById,
-    getDocAccesses,
-    getUserProfileById,
-    getUserProfileByName,
-    updateDocAccess
-} from '../utils/dynamo';
+import { createDocPermalinkIfNotExists } from './../utils/dynamo';
+
+export { registerUserProfile } from '../utils/dynamo';
 
 import {
     deleteObjectFromS3,
@@ -25,7 +15,6 @@ import {
     listKeysFromS3,
     putObjectToS3
 } from '../utils/s3';
-import { normalizeStrForUrl } from '../utils/string';
 
 const BUCKET = 'yame-dev';
 
@@ -56,7 +45,9 @@ export const getDocRepoForUser = async (
                 id: docId,
                 docName: `${defaultDock.namePrefix} 1`,
                 content: defaultDock.defaultContent,
-                lastModified: new Date()
+                lastModified: new Date(),
+                published: false,
+                removed: false
             }
         ]);
 
@@ -71,11 +62,18 @@ export const getDocRepoForUser = async (
         publishedDocKeys.map(key => getDocByKey(key))
     );
 
+    docs.map(doc => {
+        doc.published = false;
+    });
+
+    docs.filter(doc =>
+        publishedDocs.find(publishedDoc => doc.id === publishedDoc.id)
+    ).forEach(doc => {
+        doc.published = true;
+    });
+
     return {
-        docs,
-        publishedDocIds: publishedDocs.map(
-            publishDoc => publishDoc.id
-        )
+        docs
     };
 };
 
@@ -94,104 +92,6 @@ export const mutateDocRepoForUser = async (
     );
 
     await Promise.all([newAndUpdateDocsTask, deleteDocsTask]);
-};
-
-export const publishDocForUser = async (
-    id: string,
-    doc: IDoc
-): Promise<IPublishResult> => {
-    await putObjectToS3(
-        BUCKET,
-        `${id}/published/${doc.id}.json`,
-        doc
-    );
-
-    const userProfile = await getUserProfileById(id);
-    const docAccess = await getDocAccessById(doc.id);
-
-    if (!docAccess) {
-        const permalink = normalizeStrForUrl(doc.docName);
-        let settledPermalink = permalink;
-
-        let docAccessWithSamePermalink = await getDocAccess(
-            id,
-            permalink
-        );
-
-        for (
-            let counter = 1;
-            !!docAccessWithSamePermalink;
-            counter++
-        ) {
-            settledPermalink = `${permalink}-${counter}`;
-            docAccessWithSamePermalink = await getDocAccess(
-                id,
-                settledPermalink
-            );
-            counter++;
-        }
-
-        await updateDocAccess({
-            id: doc.id,
-            userId: id,
-            permalink: settledPermalink,
-            generatePDF: true,
-            generateWord: true,
-            secret: undefined,
-            protectionMode: undefined
-        });
-
-        return {
-            normalizedUsername: userProfile.username,
-            permalink: settledPermalink
-        };
-    } else {
-        return {
-            normalizedUsername: userProfile.username,
-            permalink: docAccess.permalink
-        };
-    }
-};
-
-export const updatePermalink = async (
-    id: string,
-    permalink: string
-) => {
-    const docAccess = await getDocAccessById(id);
-
-    if (docAccess) {
-        const docAcccessesWithSamePermalink = await getDocAccesses(
-            docAccess.userId,
-            permalink
-        );
-
-        if (docAcccessesWithSamePermalink.length > 1) {
-            return false;
-        }
-
-        docAccess.permalink = permalink;
-        await updateDocAccess(docAccess);
-
-        return true;
-    }
-
-    return false;
-};
-
-export const getPublishedDocByNameAndPermalink = async (
-    username: string,
-    permalink: string
-) => {
-    const userProfile = await getUserProfileByName(username);
-
-    const documentAccess = await getDocAccess(
-        userProfile.id,
-        permalink
-    );
-
-    return await getDocByKey(
-        `${userProfile.id}/published/${documentAccess.id}.json`
-    );
 };
 
 export const getDocForUser = async (
@@ -243,15 +143,23 @@ const deleteDocsForUser = async (
     );
 };
 
-export const getPublishResult = async (
-    docId: string,
-    userId: string
-): Promise<IPublishResult | null> => {
-    const docAccess = await getDocAccessById(docId);
-    const userProfile = await getUserProfileById(userId);
+const publishDoc = async (
+    userId: string,
+    doc: IDoc
+): Promise<void> => {
+    await putObjectToS3(
+        BUCKET,
+        `${userId}/published/${doc.id}.json`,
+        doc
+    );
 
-    return {
-        normalizedUsername: userProfile.username,
-        permalink: docAccess.permalink
-    };
+    doc.published = true;
+
+    addOrUpdateDocsForUser(userId, [doc]);
+
+    createDocPermalinkIfNotExists({
+        id: doc.id,
+        permalink: doc.docName,
+        userId
+    });
 };
