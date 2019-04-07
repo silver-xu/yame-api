@@ -35,11 +35,11 @@ type Doc {
   lastModified: DateTime
   published: Boolean
   removed: Boolean
-  generatePDF: Boolean
+  generatePdf: Boolean
   generateWord: Boolean
   protectDoc: Boolean
   secretPhrase: String
-  protectWholdDoc: Boolean
+  protectWholeDoc: Boolean
 }
 
 type User {
@@ -67,11 +67,11 @@ input DocMutation{
   lastModified: DateTime
   published: Boolean
   removed: Boolean
-  generatePDF: Boolean
+  generatePdf: Boolean
   generateWord: Boolean
   protectDoc: Boolean
   secretPhrase: String
-  protectWholdDoc: Boolean
+  protectWholeDoc: Boolean
 }
 
 enum UserType {

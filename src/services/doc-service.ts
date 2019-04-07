@@ -52,7 +52,7 @@ export const getDocRepoForUser = async (
                 lastModified: new Date(),
                 published: false,
                 removed: false,
-                generatePDF: true,
+                generatePdf: true,
                 generateWord: true,
                 protectDoc: false
             }

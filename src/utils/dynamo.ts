@@ -59,8 +59,7 @@ export const getDocPermalinkByPermalink = async (
     const dynamoParams = {
         TableName: DOCUMENT_PERMALINKS_TABLE,
         IndexName: 'userIdPermalinkIndex',
-        ProjectionExpression:
-            'id, userId, permalink, generatePDF, generateWord, secret, protectionMode',
+        ProjectionExpression: 'id, userId, permalink',
         KeyConditionExpression:
             'userId = :uid and permalink = :plink',
         ExpressionAttributeValues: {
