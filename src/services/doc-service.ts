@@ -47,7 +47,10 @@ export const getDocRepoForUser = async (
                 content: defaultDock.defaultContent,
                 lastModified: new Date(),
                 published: false,
-                removed: false
+                removed: false,
+                generatePDF: true,
+                generateWord: true,
+                protectDoc: false
             }
         ]);
 

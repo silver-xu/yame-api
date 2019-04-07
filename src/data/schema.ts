@@ -33,6 +33,11 @@ type Doc {
   lastModified: DateTime
   published: Boolean
   removed: Boolean
+  generatePDF: Boolean
+  generateWord: Boolean
+  protectDoc: Boolean
+  secretPhrase: String
+  protectWholdDoc: Boolean
 }
 
 type User {

@@ -5,6 +5,11 @@ export interface IDoc {
     lastModified: Date;
     published: boolean;
     removed: boolean;
+    generatePDF: boolean;
+    generateWord: boolean;
+    protectDoc: boolean;
+    secretPhrase?: string;
+    protectWholdDoc?: boolean;
 }
 
 export interface IDocRepo {
