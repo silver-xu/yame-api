@@ -4,9 +4,11 @@ import {
     getDefaultDoc,
     getDocForUser,
     getDocRepoForUser,
-    mutateDocRepoForUser
+    mutateDocRepoForUser,
+    publishDoc,
+    isPermalinkDuplicate
 } from '../services/doc-service';
-import { IDocRepoMutation } from '../types';
+import { IDoc, IDocRepoMutation } from '../types';
 
 export const resolvers = {
     DateTime: GraphQLDateTime,
@@ -45,6 +47,33 @@ export const resolvers = {
                 console.log(error);
                 return Promise.resolve(false);
             }
+        },
+        async publishDoc(
+            _: any,
+            { doc }: { doc: IDoc },
+            context: any
+        ): Promise<boolean> {
+            try {
+                await publishDoc(context.user.id, doc);
+                return true;
+            } catch (error) {
+                console.log(error);
+                return Promise.resolve(false);
+            }
+        },
+        async isPermalinkDuplicate(
+            _: any,
+            {
+                docId,
+                permalink
+            }: { docId: string; permalink: string },
+            context: any
+        ) {
+            return await isPermalinkDuplicate(
+                docId,
+                context.user.id,
+                permalink
+            );
         }
     }
 };

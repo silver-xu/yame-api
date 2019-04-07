@@ -52,58 +52,31 @@ export const createDocPermalinkIfNotExists = async (
     }
 };
 
-// export const updateDocAccess = async (documentAccess: IDocAccess) => {
-//     await putObjectToDynamo(documentAccess, DOCUMENT_ACCESS_TABLE);
-// };
+export const getDocPermalinkByPermalink = async (
+    userId: string,
+    permalink: string
+): Promise<IDocPermalink> => {
+    const dynamoParams = {
+        TableName: DOCUMENT_PERMALINKS_TABLE,
+        IndexName: 'userIdPermalinkIndex',
+        ProjectionExpression:
+            'id, userId, permalink, generatePDF, generateWord, secret, protectionMode',
+        KeyConditionExpression:
+            'userId = :uid and permalink = :plink',
+        ExpressionAttributeValues: {
+            ':uid': userId,
+            ':plink': permalink
+        }
+    };
 
-// export const getDocAccessById = async (
-//     id: string
-// ): Promise<IDocAccess | null> => {
-//     const dynamoParams = {
-//         TableName: DOCUMENT_ACCESS_TABLE,
-//         ProjectionExpression:
-//             'id, userId, permalink, generatePDF, generateWord, secret, protectionMode',
-//         KeyConditionExpression: 'id = :did',
-//         ExpressionAttributeValues: {
-//             ':did': id
-//         }
-//     };
+    const result = await dynamoDb.query(dynamoParams).promise();
 
-//     const result = await dynamoDb.query(dynamoParams).promise();
-//     const item = result.Items.length > 0 ? result.Items[0] : null;
-
-//     return item as IDocAccess;
-// };
-
-// export const getDocAccess = async (
-//     userId: string,
-//     permalink: string
-// ): Promise<IDocAccess | null> => {
-//     const items = await getDocAccesses(userId, permalink);
-//     return items && items.length > 0 ? items[0] : null;
-// };
-
-// export const getDocAccesses = async (
-//     userId: string,
-//     permalink: string
-// ): Promise<IDocAccess[]> => {
-//     const dynamoParams = {
-//         TableName: DOCUMENT_ACCESS_TABLE,
-//         IndexName: 'userIdPermalinkIndex',
-//         ProjectionExpression:
-//             'id, userId, permalink, generatePDF, generateWord, secret, protectionMode',
-//         KeyConditionExpression:
-//             'userId = :uid and permalink = :plink',
-//         ExpressionAttributeValues: {
-//             ':uid': userId,
-//             ':plink': permalink
-//         }
-//     };
-
-//     const result = await dynamoDb.query(dynamoParams).promise();
-
-//     return result.Items as IDocAccess[];
-// };
+    return (
+        result.Items &&
+        result.Items.length > 0 &&
+        (result.Items[0] as IDocPermalink)
+    );
+};
 
 export const getUserProfileByName = async (
     name: string

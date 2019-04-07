@@ -9,11 +9,13 @@ type Query {
   oneOffKey: String
   currentUser: User
   defaultDoc: DefaultDoc
-  doc(docId:String): Doc
+  doc(docId:String): Doc  
 }
 
 type Mutation {
   updateDocRepo(docRepoMutation: DocRepoMutation): Boolean
+  publishDoc(doc: DocMutation): Boolean
+  isPermalinkDuplicate(docId: String, permalink:String): Boolean
 }
 
 type DocRepo {
@@ -46,6 +48,12 @@ type User {
   id: String!
 }
 
+type DocPermalink {
+  id: String
+  permalink: String
+  userId: String
+}
+
 input DocRepoMutation{
   newDocs: [DocMutation!]
   updatedDocs: [DocMutation!]
@@ -57,6 +65,13 @@ input DocMutation{
   docName: String
   content: String
   lastModified: DateTime
+  published: Boolean
+  removed: Boolean
+  generatePDF: Boolean
+  generateWord: Boolean
+  protectDoc: Boolean
+  secretPhrase: String
+  protectWholdDoc: Boolean
 }
 
 enum UserType {

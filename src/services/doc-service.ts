@@ -3,9 +3,13 @@ import {
     IDefaultDoc,
     IDoc,
     IDocRepo,
-    IDocRepoMutation
+    IDocRepoMutation,
+    IDocPermalink
 } from '../types';
-import { createDocPermalinkIfNotExists } from './../utils/dynamo';
+import {
+    createDocPermalinkIfNotExists,
+    getDocPermalinkByPermalink
+} from './../utils/dynamo';
 
 export { registerUserProfile } from '../utils/dynamo';
 
@@ -109,6 +113,47 @@ export const getDocForUser = async (
     return doc;
 };
 
+export const getDocPermalink = async (
+    id: string,
+    permalink: string
+): Promise<IDocPermalink> => {
+    return await getDocPermalinkByPermalink(id, permalink);
+};
+
+export const isPermalinkDuplicate = async (
+    docId: string,
+    userId: string,
+    permalink: string
+): Promise<boolean> => {
+    const docPermalink = await getDocPermalinkByPermalink(
+        userId,
+        permalink
+    );
+
+    return docPermalink && docPermalink.id !== docId;
+};
+
+export const publishDoc = async (
+    userId: string,
+    doc: IDoc
+): Promise<void> => {
+    await putObjectToS3(
+        BUCKET,
+        `${userId}/published/${doc.id}.json`,
+        doc
+    );
+
+    doc.published = true;
+
+    addOrUpdateDocsForUser(userId, [doc]);
+
+    createDocPermalinkIfNotExists({
+        id: doc.id,
+        permalink: doc.docName,
+        userId
+    });
+};
+
 const getDocByKey = async (key: string): Promise<IDoc> => {
     const doc = await getObjectFromS3<IDoc>(BUCKET, key);
     return {
@@ -144,25 +189,4 @@ const deleteDocsForUser = async (
             );
         })
     );
-};
-
-const publishDoc = async (
-    userId: string,
-    doc: IDoc
-): Promise<void> => {
-    await putObjectToS3(
-        BUCKET,
-        `${userId}/published/${doc.id}.json`,
-        doc
-    );
-
-    doc.published = true;
-
-    addOrUpdateDocsForUser(userId, [doc]);
-
-    createDocPermalinkIfNotExists({
-        id: doc.id,
-        permalink: doc.docName,
-        userId
-    });
 };
