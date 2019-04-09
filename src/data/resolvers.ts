@@ -4,9 +4,10 @@ import {
     getDefaultDoc,
     getDocForUser,
     getDocRepoForUser,
+    getPublishedDoc,
+    isPermalinkDuplicate,
     mutateDocRepoForUser,
-    publishDoc,
-    isPermalinkDuplicate
+    publishDoc
 } from '../services/doc-service';
 import { IDoc, IDocRepoMutation } from '../types';
 
@@ -19,14 +20,24 @@ export const resolvers = {
         async doc(_: any, args: any, context: any) {
             return await getDocForUser(context.user.id, args.docId);
         },
-        oneOffKey(_: any, __: any, context: any) {
+        oneOffKey(_: any, __: any, ___: any) {
             return uuidv4();
         },
         currentUser(_: any, __: any, context: any) {
             return context.user;
         },
-        async defaultDoc(_: any, __: any, context: any) {
+        async defaultDoc(_: any, __: any, ___: any) {
             return await getDefaultDoc();
+        },
+        async publishedDoc(
+            _: any,
+            {
+                username,
+                permalink
+            }: { username: string; permalink: string },
+            __: any
+        ) {
+            return await getPublishedDoc(username, permalink);
         }
     },
     Mutation: {
@@ -50,11 +61,11 @@ export const resolvers = {
         },
         async publishDoc(
             _: any,
-            { doc }: { doc: IDoc },
+            { doc, permalink }: { doc: IDoc; permalink: string },
             context: any
         ): Promise<boolean> {
             try {
-                await publishDoc(context.user.id, doc);
+                await publishDoc(context.user.id, doc, permalink);
                 return true;
             } catch (error) {
                 console.log(error);

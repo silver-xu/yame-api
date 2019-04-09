@@ -2,13 +2,14 @@ import uuidv4 from 'uuid';
 import {
     IDefaultDoc,
     IDoc,
+    IDocPermalink,
     IDocRepo,
-    IDocRepoMutation,
-    IDocPermalink
+    IDocRepoMutation
 } from '../types';
 import {
     createDocPermalinkIfNotExists,
-    getDocPermalinkByPermalink
+    getDocPermalinkByPermalink,
+    getUserProfileByName
 } from './../utils/dynamo';
 
 export { registerUserProfile } from '../utils/dynamo';
@@ -120,6 +121,22 @@ export const getDocPermalink = async (
     return await getDocPermalinkByPermalink(id, permalink);
 };
 
+export const getPublishedDoc = async (
+    username: string,
+    permalink: string
+) => {
+    const userProfile = await getUserProfileByName(username);
+
+    const docPermalink = await getDocPermalinkByPermalink(
+        userProfile.id,
+        permalink
+    );
+
+    return await getDocByKey(
+        `${userProfile.id}/published/${docPermalink.id}.json`
+    );
+};
+
 export const isPermalinkDuplicate = async (
     docId: string,
     userId: string,
@@ -135,7 +152,8 @@ export const isPermalinkDuplicate = async (
 
 export const publishDoc = async (
     userId: string,
-    doc: IDoc
+    doc: IDoc,
+    permalink: string
 ): Promise<void> => {
     await putObjectToS3(
         BUCKET,
@@ -149,7 +167,7 @@ export const publishDoc = async (
 
     createDocPermalinkIfNotExists({
         id: doc.id,
-        permalink: doc.docName,
+        permalink,
         userId
     });
 };

@@ -10,11 +10,12 @@ type Query {
   currentUser: User
   defaultDoc: DefaultDoc
   doc(docId:String): Doc  
+  publishedDoc(username: String, permalink: String): Doc
 }
 
 type Mutation {
   updateDocRepo(docRepoMutation: DocRepoMutation): Boolean
-  publishDoc(doc: DocMutation): Boolean
+  publishDoc(doc: DocMutation, permalink: String): Boolean
   isPermalinkDuplicate(docId: String, permalink:String): Boolean
 }
 
