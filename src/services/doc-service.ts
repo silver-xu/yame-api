@@ -132,6 +132,8 @@ export const getPublishedDoc = async (
         permalink
     );
 
+    console.log({ id: userProfile.id, permalink });
+
     return await getDocByKey(
         `${userProfile.id}/published/${docPermalink.id}.json`
     );

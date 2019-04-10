@@ -69,7 +69,7 @@ export const getDocPermalinkByPermalink = async (
     };
 
     const result = await dynamoDb.query(dynamoParams).promise();
-
+    console.log(result);
     return (
         result.Items &&
         result.Items.length > 0 &&
