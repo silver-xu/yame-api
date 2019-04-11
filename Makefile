@@ -1,10 +1,12 @@
 STAGE ?= local
 FB_APP_ID ?= 330164834292470
 FB_APP_SECRET ?= 42949536913299795249c3404d0e1c5a
+BUCKET ?= yame-dev
 
 export FB_APP_ID
 export FB_APP_SECRET
 export STAGE
+export BUCKET
 
 start: node_modules
 	export STAGE=local && npm start
