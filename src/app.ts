@@ -15,7 +15,6 @@ import {
 import { UserType } from './types';
 import { registerUserProfile } from './utils/dynamo';
 import { normalizeStrForUrl } from './utils/string';
-import concatStream from 'concat-stream';
 
 process.env.FONTCONFIG_PATH = '/var/task/fonts';
 
