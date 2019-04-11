@@ -12,6 +12,8 @@ import { UserType } from './types';
 import { registerUserProfile } from './utils/dynamo';
 import { normalizeStrForUrl } from './utils/string';
 
+process.env.FONTCONFIG_PATH = '/var/task/fonts';
+
 export const createApp = async () => {
     const app = express();
     app.use(cors());

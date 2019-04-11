@@ -27,7 +27,7 @@ import {
 } from '../utils/s3';
 import { normalizeStrForUrl } from '../utils/string';
 
-const BUCKET = 'yame-dev';
+const BUCKET = process.env.BUCKET;
 
 export const getDefaultDoc = async (): Promise<IDefaultDoc> => {
     const defaultDoc = await getObjectFromS3<IDefaultDoc>(
