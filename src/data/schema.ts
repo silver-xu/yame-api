@@ -9,22 +9,19 @@ type Query {
   oneOffKey: String
   currentUser: User
   defaultDoc: DefaultDoc
-  docAccess(id:String): DocAccess
-  publishResult(id:String): PublishResult
-  doc(docId:String): Doc
-  docByPermalink(username:String, permalink: String): Doc
+  doc(docId:String): Doc  
+  publishedDoc(username: String, permalink: String): Doc
 }
 
 type Mutation {
   updateDocRepo(docRepoMutation: DocRepoMutation): Boolean
-  publishDoc(docMutation: DocMutation): PublishResult
-  updateDocAccess(docAccessMutation: DocAccessMutation): Boolean
-  updatePermalink(id:String, permalink:String): Boolean
+  publishDoc(doc: DocMutation, permalink: String): Boolean
+  isPermalinkDuplicate(docId: String, permalink:String): Boolean
 }
 
 type DocRepo {
   docs: [Doc]
-  publishedDocs: [Doc]
+  publishedDocIds: [String]
 }
 
 type DefaultDoc{
@@ -37,6 +34,13 @@ type Doc {
   docName: String
   content: String
   lastModified: DateTime
+  published: Boolean
+  removed: Boolean
+  generatePdf: Boolean
+  generateWord: Boolean
+  protectDoc: Boolean
+  secretPhrase: String
+  protectWholeDoc: Boolean
 }
 
 type User {
@@ -45,19 +49,10 @@ type User {
   id: String!
 }
 
-type PublishResult{
-  normalizedUsername: String
-  permalink: String
-}
-
-type DocAccess {
+type DocPermalink {
   id: String
-  userId: String
   permalink: String
-  generatePDF: Boolean
-  generateWord: Boolean
-  secret: String
-  protectionMode: String
+  userId: String
 }
 
 input DocRepoMutation{
@@ -71,17 +66,13 @@ input DocMutation{
   docName: String
   content: String
   lastModified: DateTime
-}
-
-input DocAccessMutation{
-  id: String
-  userId: String
-  permalink: String
-  generatePDF: Boolean
+  published: Boolean
+  removed: Boolean
+  generatePdf: Boolean
   generateWord: Boolean
-  secret: String
-  protectionMode: String
-  lastPublishedHash: String
+  protectDoc: Boolean
+  secretPhrase: String
+  protectWholeDoc: Boolean
 }
 
 enum UserType {

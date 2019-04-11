@@ -4,18 +4,12 @@ import {
     getDefaultDoc,
     getDocForUser,
     getDocRepoForUser,
-    getPublishedDocByNameAndPermalink,
-    getPublishResult,
+    getPublishedDoc,
+    isPermalinkDuplicate,
     mutateDocRepoForUser,
-    publishDocForUser,
-    updatePermalink
+    publishDoc
 } from '../services/doc-service';
-import {
-    IDocMutation,
-    IDocRepoMutation,
-    IPublishResult
-} from '../types';
-import { getDocAccessById } from '../utils/dynamo';
+import { IDoc, IDocRepoMutation } from '../types';
 
 export const resolvers = {
     DateTime: GraphQLDateTime,
@@ -26,41 +20,24 @@ export const resolvers = {
         async doc(_: any, args: any, context: any) {
             return await getDocForUser(context.user.id, args.docId);
         },
-        oneOffKey(_: any, __: any, context: any) {
+        oneOffKey(_: any, __: any, ___: any) {
             return uuidv4();
         },
         currentUser(_: any, __: any, context: any) {
             return context.user;
         },
-        async defaultDoc(_: any, __: any, context: any) {
+        async defaultDoc(_: any, __: any, ___: any) {
             return await getDefaultDoc();
         },
-        async docAccess(
-            _: any,
-            { id }: { id: string },
-            context: any
-        ) {
-            return await getDocAccessById(id);
-        },
-        async publishResult(
-            _: any,
-            { id }: { id: string },
-            context: any
-        ) {
-            return await getPublishResult(id, context.user.id);
-        },
-        async docByPermalink(
+        async publishedDoc(
             _: any,
             {
                 username,
                 permalink
             }: { username: string; permalink: string },
-            context: any
+            __: any
         ) {
-            return await getPublishedDocByNameAndPermalink(
-                username,
-                permalink
-            );
+            return await getPublishedDoc(username, permalink);
         }
     },
     Mutation: {
@@ -84,30 +61,30 @@ export const resolvers = {
         },
         async publishDoc(
             _: any,
-            { docMutation }: { docMutation: IDocMutation },
-            context: any
-        ): Promise<IPublishResult | undefined> {
-            try {
-                return await publishDocForUser(
-                    context.user.id,
-                    docMutation
-                );
-            } catch (error) {
-                console.log(error);
-                return Promise.resolve(undefined);
-            }
-        },
-        async updatePermalink(
-            _: any,
-            { id, permalink }: { id: string; permalink: string },
+            { doc, permalink }: { doc: IDoc; permalink: string },
             context: any
         ): Promise<boolean> {
             try {
-                return await updatePermalink(id, permalink);
+                await publishDoc(context.user.id, doc, permalink);
+                return true;
             } catch (error) {
                 console.log(error);
                 return Promise.resolve(false);
             }
+        },
+        async isPermalinkDuplicate(
+            _: any,
+            {
+                docId,
+                permalink
+            }: { docId: string; permalink: string },
+            context: any
+        ) {
+            return await isPermalinkDuplicate(
+                docId,
+                context.user.id,
+                permalink
+            );
         }
     }
 };

@@ -1,11 +1,11 @@
 import AWS from 'aws-sdk';
-import { IDocAccess, IUserProfile } from '../types';
+import { IDocPermalink, IUserProfile } from '../types';
 
 const dynamoDb = new AWS.DynamoDB.DocumentClient({
     region: 'ap-southeast-2'
 });
 
-const DOCUMENT_ACCESS_TABLE = 'DocumentAccess';
+const DOCUMENT_PERMALINKS_TABLE = 'DocPermalinks';
 const USER_PROFILE_TABLE = 'UserProfile';
 
 export const putObjectToDynamo = async (
@@ -20,17 +20,18 @@ export const putObjectToDynamo = async (
     return dynamoDb.put(dynamoParams).promise();
 };
 
-export const updateDocAccess = async (documentAccess: IDocAccess) => {
-    await putObjectToDynamo(documentAccess, DOCUMENT_ACCESS_TABLE);
+export const updateDocPermalink = async (
+    docPermalink: IDocPermalink
+) => {
+    await putObjectToDynamo(docPermalink, DOCUMENT_PERMALINKS_TABLE);
 };
 
-export const getDocAccessById = async (
+export const getDocPermalink = async (
     id: string
-): Promise<IDocAccess | null> => {
+): Promise<IDocPermalink | null> => {
     const dynamoParams = {
-        TableName: DOCUMENT_ACCESS_TABLE,
-        ProjectionExpression:
-            'id, userId, permalink, generatePDF, generateWord, secret, protectionMode',
+        TableName: DOCUMENT_PERMALINKS_TABLE,
+        ProjectionExpression: 'id, userId, permalink',
         KeyConditionExpression: 'id = :did',
         ExpressionAttributeValues: {
             ':did': id
@@ -40,26 +41,25 @@ export const getDocAccessById = async (
     const result = await dynamoDb.query(dynamoParams).promise();
     const item = result.Items.length > 0 ? result.Items[0] : null;
 
-    return item as IDocAccess;
+    return item as IDocPermalink;
 };
 
-export const getDocAccess = async (
-    userId: string,
-    permalink: string
-): Promise<IDocAccess | null> => {
-    const items = await getDocAccesses(userId, permalink);
-    return items && items.length > 0 ? items[0] : null;
+export const createDocPermalinkIfNotExists = async (
+    docPermalink: IDocPermalink
+) => {
+    if (!(await getDocPermalink(docPermalink.id))) {
+        await updateDocPermalink(docPermalink);
+    }
 };
 
-export const getDocAccesses = async (
+export const getDocPermalinkByPermalink = async (
     userId: string,
     permalink: string
-): Promise<IDocAccess[]> => {
+): Promise<IDocPermalink> => {
     const dynamoParams = {
-        TableName: DOCUMENT_ACCESS_TABLE,
+        TableName: DOCUMENT_PERMALINKS_TABLE,
         IndexName: 'userIdPermalinkIndex',
-        ProjectionExpression:
-            'id, userId, permalink, generatePDF, generateWord, secret, protectionMode',
+        ProjectionExpression: 'id, userId, permalink',
         KeyConditionExpression:
             'userId = :uid and permalink = :plink',
         ExpressionAttributeValues: {
@@ -69,8 +69,12 @@ export const getDocAccesses = async (
     };
 
     const result = await dynamoDb.query(dynamoParams).promise();
-
-    return result.Items as IDocAccess[];
+    console.log(result);
+    return (
+        result.Items &&
+        result.Items.length > 0 &&
+        (result.Items[0] as IDocPermalink)
+    );
 };
 
 export const getUserProfileByName = async (

@@ -3,11 +3,17 @@ export interface IDoc {
     docName: string;
     content: string;
     lastModified: Date;
+    published: boolean;
+    removed: boolean;
+    generatePdf: boolean;
+    generateWord: boolean;
+    protectDoc: boolean;
+    secretPhrase?: string;
+    protectWholeDoc?: boolean;
 }
 
 export interface IDocRepo {
     docs: IDoc[];
-    publishedDocs: IDoc[];
 }
 
 export interface IDefaultDoc {
@@ -42,14 +48,10 @@ export interface IFacebookAuthResponse {
     expiryDate: Date;
 }
 
-export interface IDocAccess {
+export interface IDocPermalink {
     id: string;
     userId: string;
     permalink: string;
-    generatePDF: boolean;
-    generateWord: boolean;
-    secret: string;
-    protectionMode: 'A' | 'S' | undefined;
 }
 
 export interface IUserProfile {
