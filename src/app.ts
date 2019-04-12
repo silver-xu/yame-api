@@ -2,6 +2,7 @@ import { ApolloServer } from 'apollo-server-express';
 import bodyParser from 'body-parser';
 import cors = require('cors');
 import express from 'express';
+import fs from 'fs';
 import { resolvers } from './data/resolvers';
 import schema from './data/schema';
 import { renderDoc } from './services/doc-render-service';
@@ -87,9 +88,13 @@ export const createApp = async () => {
     app.get('/convert/pdf/:userId/:docId', async (req, res) => {
         const { userId, docId } = req.params;
         const page = await browser.newPage();
+
         await page.goto(
             `http://localhost:3001/serve/${userId}/${docId}`
         );
+        page.addStyleTag({
+            path: './src/css/document.css'
+        });
         const buffer = await page.pdf({ format: 'A4' });
         res.type('application/pdf');
         res.send(buffer);
