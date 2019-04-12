@@ -6,7 +6,7 @@
     "scripts": {
         "start": "node --nolazy -r ts-node/register src/index.ts",
         "start:watch": "nodemon --inspect",
-        "build": "tsc && cp -r ./src/fonts ./dist/fonts && cp ./src/fonts.conf ./dist",
+        "build": "tsc",
         "format": "prettier --write '**/*.{ts,json,yml,yaml}'",
         "format:check": "prettier --list-different '**/*.{ts,json,yml,yaml}'",
         "test": "jest",
