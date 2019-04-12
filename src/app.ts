@@ -2,10 +2,6 @@ import { ApolloServer } from 'apollo-server-express';
 import bodyParser from 'body-parser';
 import cors = require('cors');
 import express from 'express';
-import fs from 'fs';
-import markdownpdf from 'markdown-pdf';
-import puppeteer from 'puppeteer';
-import uuidv4 from 'uuid';
 import { resolvers } from './data/resolvers';
 import schema from './data/schema';
 import { renderDoc } from './services/doc-render-service';
@@ -17,6 +13,7 @@ import {
 import { UserType } from './types';
 import { registerUserProfile } from './utils/dynamo';
 import { normalizeStrForUrl } from './utils/string';
+const puppeteerLambda = require('puppeteer-lambda');
 
 export const createApp = async () => {
     const app = express();
@@ -24,6 +21,10 @@ export const createApp = async () => {
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(express.static('public'));
+
+    const browser = await puppeteerLambda.getBrowser({
+        headless: true
+    });
 
     const fbAppAccessToken = await obtainAppToken();
 
@@ -85,7 +86,6 @@ export const createApp = async () => {
 
     app.get('/convert/pdf/:userId/:docId', async (req, res) => {
         const { userId, docId } = req.params;
-        const browser = await puppeteer.launch();
         const page = await browser.newPage();
         await page.goto(
             `http://localhost:3001/serve/${userId}/${docId}`
