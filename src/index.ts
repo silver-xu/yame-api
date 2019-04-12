@@ -1,7 +1,6 @@
 import { createApp } from './app';
 
 const GRAPHQL_PORT = 3001;
-process.env.FONTCONFIG_PATH = '/fonts';
 
 (async () => {
     (await createApp()).listen({ port: GRAPHQL_PORT }, () => {

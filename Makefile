@@ -23,8 +23,8 @@ build: node_modules
 dockerbuild:
 	docker build -t yame-api .
 
-dockerstart:
-	docker run -it -p 3001:3001 --env AWS_ACCESS_KEY_ID=${AWS_KEY} --env AWS_SECRET_ACCESS_KEY=${AWS_ACCESS_KEY} yame-api
+dockerwatch:
+	docker run -it -p 3001:3001 -v ${PWD}/:/app --env AWS_ACCESS_KEY_ID=${AWS_KEY} --env AWS_SECRET_ACCESS_KEY=${AWS_ACCESS_KEY} yame-api
 
 test: node_modules lint
 	npm test

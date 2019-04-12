@@ -4,9 +4,11 @@ import cors = require('cors');
 import express from 'express';
 import fs from 'fs';
 import markdownpdf from 'markdown-pdf';
+import puppeteer from 'puppeteer';
 import uuidv4 from 'uuid';
 import { resolvers } from './data/resolvers';
 import schema from './data/schema';
+import { renderDoc } from './services/doc-render-service';
 import { getDocForUser } from './services/doc-service';
 import {
     loginUser,
@@ -21,6 +23,7 @@ export const createApp = async () => {
     app.use(cors());
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: true }));
+    app.use(express.static('public'));
 
     const fbAppAccessToken = await obtainAppToken();
 
@@ -74,27 +77,23 @@ export const createApp = async () => {
 
     app.get('/ping', (req, res) => res.send('pong'));
 
-    app.get('/convert-pdf/:userId/:docId', async (req, res) => {
+    app.get('/serve/:userId/:docId', async (req, res) => {
         const { userId, docId } = req.params;
         const doc = await getDocForUser(userId, docId);
-        const outputPath = `/tmp/${uuidv4()}.pdf`;
+        res.send(renderDoc(doc));
+    });
 
-        markdownpdf()
-            .from.string(doc.content)
-            .to(outputPath, () => {
-                const fileStats = fs.statSync(outputPath);
-
-                res.writeHead(200, {
-                    'Content-Type': 'application/pdf',
-                    'Content-length': fileStats.size,
-                    'Content-Disposition': `attachment; filename=${
-                        doc.docName
-                    }.pdf`
-                });
-
-                const stream = fs.createReadStream(outputPath);
-                stream.pipe(res);
-            });
+    app.get('/convert/pdf/:userId/:docId', async (req, res) => {
+        const { userId, docId } = req.params;
+        const browser = await puppeteer.launch();
+        const page = await browser.newPage();
+        await page.goto(
+            `http://localhost:3001/serve/${userId}/${docId}`
+        );
+        const buffer = await page.pdf({ format: 'A4' });
+        res.type('application/pdf');
+        res.send(buffer);
+        browser.close();
     });
 
     server.applyMiddleware({ app });
