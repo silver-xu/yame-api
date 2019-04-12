@@ -20,6 +20,12 @@ node_modules:
 build: node_modules
 	npm run build
 
+dockerbuild:
+	docker build -t yame-api .
+
+dockerstart:
+	docker run -it -p 3001:3001 --env AWS_ACCESS_KEY_ID=${AWS_KEY} --env AWS_SECRET_ACCESS_KEY=${AWS_ACCESS_KEY} yame-api
+
 test: node_modules lint
 	npm test
 
@@ -34,3 +40,4 @@ offline: build
 
 deploy: build
 	export STAGE=dev && npm run deploy
+
