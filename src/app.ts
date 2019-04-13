@@ -5,6 +5,7 @@ import express from 'express';
 import fs from 'fs';
 import pdf from 'html-pdf';
 import util from 'util';
+import uuidv4 from 'uuid';
 import { resolvers } from './data/resolvers';
 import schema from './data/schema';
 import { renderDoc } from './services/doc-render-service';
@@ -16,6 +17,9 @@ import {
 import { UserType } from './types';
 import { registerUserProfile } from './utils/dynamo';
 import { normalizeStrForUrl } from './utils/string';
+
+const pandoc = require('pandoc-aws-lambda-binary');
+
 export const createApp = async () => {
     const app = express();
     app.use(cors());
@@ -23,8 +27,9 @@ export const createApp = async () => {
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(express.static('public'));
 
-    const readFileAsyc = util.promisify(fs.readFile);
-    const css = await readFileAsyc('./css/document.css', 'utf-8');
+    const readFileAsync = util.promisify(fs.readFile);
+    const writeFileAsync = util.promisify(fs.writeFile);
+    const css = await readFileAsync('./css/document.css', 'utf-8');
 
     const fbAppAccessToken = await obtainAppToken();
 
@@ -93,6 +98,10 @@ export const createApp = async () => {
         const html = renderDoc(doc, css);
         res.setHeader('Content-type', 'application/pdf');
 
+        res.setHeader(
+            'Content-Disposition',
+            `attachment; filename="${doc.docName}.pdf"`
+        );
         pdf.create(html, {
             format: 'A4',
             border: '20px',
@@ -109,21 +118,28 @@ export const createApp = async () => {
         });
     });
 
-    // app.get('/convert/pdf/:userId/:docId', async (req, res) => {
-    //     const { userId, docId } = req.params;
-    //     const page = await browser.newPage();
+    app.get('/convert/word/:userId/:docId', async (req, res) => {
+        const { userId, docId } = req.params;
+        const doc = await getDocForUser(userId, docId);
 
-    //     await page.goto(
-    //         `http://localhost:3001/serve/${userId}/${docId}`
-    //     );
-    //     page.addStyleTag({
-    //         path: './src/css/document.css'
-    //     });
-    //     const buffer = await page.pdf({ format: 'A4' });
-    //     res.type('application/pdf');
-    //     res.send(buffer);
-    //     browser.close();
-    // });
+        const html = renderDoc(doc, css);
+        const srcFileName = `${uuidv4()}.html`;
+        const destFileName = `${uuidv4()}.docx`;
+        await writeFileAsync(`/tmp/${srcFileName}`, html);
+        await pandoc(`/tmp/${srcFileName}`, `/tmp/${destFileName}`);
+
+        res.setHeader(
+            'Content-type',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        );
+
+        res.setHeader(
+            'Content-Disposition',
+            `attachment; filename="${doc.docName}.docx"`
+        );
+
+        fs.createReadStream(`/tmp/${destFileName}`).pipe(res);
+    });
 
     server.applyMiddleware({ app });
 

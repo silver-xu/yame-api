@@ -18,7 +18,8 @@ export const handler = async (
             'image/jpeg',
             'image/png',
             'image/svg+xml',
-            'application/pdf'
+            'application/pdf',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
         ];
 
         const server = awsServerlessExpress.createServer(
