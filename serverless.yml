@@ -14,6 +14,9 @@ custom:
     certificateNames:
         dev: '*.dev.yame.io'
         prod: '*.yame.io'
+    apigwBinary:
+        types:
+            - 'application/pdf'
 provider:
     name: aws
     runtime: nodejs8.10
@@ -44,14 +47,21 @@ functions:
     app:
         handler: dist/handler.handler
         events:
+            - http:
+                  path: convert/{proxy+}
+                  method: get
+                  contentHandling: CONVERT_TO_BINARY
             - http: ANY /
             - http: 'ANY {proxy+}'
         environment:
             FB_APP_ID: ${env:FB_APP_ID}
             FB_APP_SECRET: ${env:FB_APP_SECRET}
+            BUCKET: ${env:BUCKET}
 plugins:
     - serverless-offline
     - serverless-domain-manager
+    - serverless-apigw-binary
+    - serverless-apigwy-binary
 
 resources:
     Resources:

@@ -3,6 +3,8 @@ import bodyParser from 'body-parser';
 import cors = require('cors');
 import express from 'express';
 import fs from 'fs';
+import pdf from 'html-pdf';
+import util from 'util';
 import { resolvers } from './data/resolvers';
 import schema from './data/schema';
 import { renderDoc } from './services/doc-render-service';
@@ -14,8 +16,6 @@ import {
 import { UserType } from './types';
 import { registerUserProfile } from './utils/dynamo';
 import { normalizeStrForUrl } from './utils/string';
-const puppeteerLambda = require('puppeteer-lambda');
-
 export const createApp = async () => {
     const app = express();
     app.use(cors());
@@ -23,9 +23,8 @@ export const createApp = async () => {
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(express.static('public'));
 
-    const browser = await puppeteerLambda.getBrowser({
-        headless: true
-    });
+    const readFileAsyc = util.promisify(fs.readFile);
+    const css = await readFileAsyc('./src/css/document.css', 'utf-8');
 
     const fbAppAccessToken = await obtainAppToken();
 
@@ -79,27 +78,50 @@ export const createApp = async () => {
 
     app.get('/ping', (req, res) => res.send('pong'));
 
-    app.get('/serve/:userId/:docId', async (req, res) => {
+    app.get('/parse/:userId/:docId', async (req, res) => {
         const { userId, docId } = req.params;
         const doc = await getDocForUser(userId, docId);
-        res.send(renderDoc(doc));
+
+        const html = renderDoc(doc, css);
+        res.send(html);
     });
 
     app.get('/convert/pdf/:userId/:docId', async (req, res) => {
         const { userId, docId } = req.params;
-        const page = await browser.newPage();
+        const doc = await getDocForUser(userId, docId);
 
-        await page.goto(
-            `http://localhost:3001/serve/${userId}/${docId}`
-        );
-        page.addStyleTag({
-            path: './src/css/document.css'
+        const html = renderDoc(doc, css);
+        res.setHeader('Content-type', 'application/pdf');
+
+        pdf.create(html, {
+            format: 'A4',
+            border: '20px',
+            footer: {
+                height: '20px',
+                contents: `<span style="font-size:12px">${
+                    doc.docName
+                }</span>`
+            }
+        }).toStream((_, stream) => {
+            stream.pipe(res);
         });
-        const buffer = await page.pdf({ format: 'A4' });
-        res.type('application/pdf');
-        res.send(buffer);
-        browser.close();
     });
+
+    // app.get('/convert/pdf/:userId/:docId', async (req, res) => {
+    //     const { userId, docId } = req.params;
+    //     const page = await browser.newPage();
+
+    //     await page.goto(
+    //         `http://localhost:3001/serve/${userId}/${docId}`
+    //     );
+    //     page.addStyleTag({
+    //         path: './src/css/document.css'
+    //     });
+    //     const buffer = await page.pdf({ format: 'A4' });
+    //     res.type('application/pdf');
+    //     res.send(buffer);
+    //     browser.close();
+    // });
 
     server.applyMiddleware({ app });
 

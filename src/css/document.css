@@ -20,12 +20,13 @@ SOFTWARE.
 /* cyrillic-ext */
 
 .markdown-body {
-    font-size: 16px;
+    font-size: 12px;
     line-height: 1.6;
     padding-top: 10px;
     padding-bottom: 10px;
     padding: 30px;
     color: #333;
+    font-family: 'DejaVuSerif';
 }
 .markdown-body a {
     color: #4183c4;
@@ -100,26 +101,26 @@ SOFTWARE.
     font-size: inherit;
 }
 .markdown-body h1 {
-    font-size: 32px;
+    font-size: 20px;
     color: black;
 }
 .markdown-body h2 {
-    font-size: 24px;
+    font-size: 19px;
     border-bottom: 1px solid #cccccc;
     color: black;
 }
 .markdown-body h3 {
-    font-size: 18px;
+    font-size: 16px;
 }
 .markdown-body h4 {
-    font-size: 16px;
+    font-size: 15px;
 }
 .markdown-body h5 {
     font-size: 14px;
 }
 .markdown-body h6 {
     color: #777777;
-    font-size: 14px;
+    font-size: 13px;
 }
 .markdown-body p,
 .markdown-body blockquote,
@@ -129,8 +130,9 @@ SOFTWARE.
 .markdown-body li,
 .markdown-body table,
 .markdown-body pre {
-    margin: 15px 0;
+    margin: 10px 0;
 }
+
 .markdown-body hr {
     border-top: 4px #cccccc solid;
     padding: 0;
@@ -243,12 +245,14 @@ SOFTWARE.
     border: 1px solid #cccccc;
     text-align: left;
     margin: 0;
+    font-size: 12px;
     padding: 6px 13px;
 }
 .markdown-body table tr td {
     border: 1px solid #cccccc;
     text-align: left;
     margin: 0;
+    font-size: 12px;
     padding: 6px 13px;
 }
 .markdown-body table tr th :first-child,
