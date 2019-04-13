@@ -63,6 +63,10 @@ plugins:
     - serverless-apigw-binary
     - serverless-apigwy-binary
 
+package:
+    exclude:
+        - src/**
+
 resources:
     Resources:
         DocPermalinksTable:

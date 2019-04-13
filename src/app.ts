@@ -24,7 +24,7 @@ export const createApp = async () => {
     app.use(express.static('public'));
 
     const readFileAsyc = util.promisify(fs.readFile);
-    const css = await readFileAsyc('./src/css/document.css', 'utf-8');
+    const css = await readFileAsyc('./css/document.css', 'utf-8');
 
     const fbAppAccessToken = await obtainAppToken();
 
