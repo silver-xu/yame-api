@@ -98,8 +98,7 @@ export const createApp = async () => {
             border: '20px',
             footer: {
                 height: '20px',
-                contents: `<span style="font-size:12px">${
-                    doc.docName
+                contents: `<span class="footer">${doc.docName}
                 }</span>`
             }
         }).toStream((_, stream) => {

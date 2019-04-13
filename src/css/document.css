@@ -19,14 +19,23 @@ SOFTWARE.
 */
 /* cyrillic-ext */
 
+* {
+    font-family: 'Roboto';
+}
+
 .markdown-body {
-    font-size: 12px;
+    font-size: 10px;
     line-height: 1.6;
     padding-top: 10px;
     padding-bottom: 10px;
     padding: 30px;
     color: #333;
-    font-family: 'DejaVuSerif';
+}
+.footer {
+    font-size: 9px;
+    color: #777777;
+    text-align: center;
+    display: block;
 }
 .markdown-body a {
     color: #4183c4;
@@ -101,26 +110,26 @@ SOFTWARE.
     font-size: inherit;
 }
 .markdown-body h1 {
-    font-size: 20px;
+    font-size: 18px;
     color: black;
 }
 .markdown-body h2 {
-    font-size: 19px;
+    font-size: 16px;
     border-bottom: 1px solid #cccccc;
     color: black;
 }
 .markdown-body h3 {
-    font-size: 16px;
-}
-.markdown-body h4 {
     font-size: 15px;
 }
-.markdown-body h5 {
+.markdown-body h4 {
     font-size: 14px;
+}
+.markdown-body h5 {
+    font-size: 13px;
 }
 .markdown-body h6 {
     color: #777777;
-    font-size: 13px;
+    font-size: 12px;
 }
 .markdown-body p,
 .markdown-body blockquote,
