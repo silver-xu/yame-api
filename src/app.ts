@@ -101,7 +101,10 @@ export const createApp = async () => {
                 contents: `<span class="footer">${doc.docName}
                 }</span>`
             }
-        }).toStream((_, stream) => {
+        }).toStream((err, stream) => {
+            if (err) {
+                console.error(err);
+            }
             stream.pipe(res);
         });
     });
