@@ -14,16 +14,16 @@ export CUSTOM_CHROME
 export CHROME_BUCKET
 export CHROME_KEY
 
-start: node_modules
+start: modules
 	export STAGE=local && npm start
 
-watch: node_modules
+watch: modules
 	export STAGE=local && npm run start:watch
 
-node_modules:
+modules:
 	npm install
 
-build: node_modules
+build: modules
 	npm run build
 
 dockerbuild:
@@ -32,13 +32,13 @@ dockerbuild:
 dockerwatch:
 	docker run -it -p 3001:3001 -v ${PWD}/:/app --env AWS_ACCESS_KEY_ID=${AWS_KEY} --env AWS_SECRET_ACCESS_KEY=${AWS_ACCESS_KEY} yame-api
 
-test: node_modules lint
+test: modules lint
 	npm test
 
-lint: node_modules
+lint: modules
 	npm run lint
 
-fix: node_modules
+fix: modules
 	npm run lint:fix
 
 offline: build
