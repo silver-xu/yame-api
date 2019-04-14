@@ -19,12 +19,14 @@ import {
     getObjectFromS3,
     listKeysFromS3,
     putObjectToS3,
-    putStreamToS3
+    putStreamToS3,
+    downloadStreamFromS3
 } from '../utils/s3';
 import {
     docToPdf as docToPdfStream,
     docToWord as docToWordStream
 } from './doc-conversion-service';
+import stream = require('stream');
 
 const BUCKET = process.env.BUCKET;
 
@@ -190,6 +192,26 @@ export const publishDoc = async (
         BUCKET,
         `${userId}/published/word/${doc.id}.docx`,
         await docToWordStream(doc)
+    );
+};
+
+export const downloadPdfAsStream = (
+    userId: string,
+    docId: string
+): stream => {
+    return downloadStreamFromS3(
+        BUCKET,
+        `${userId}/published/pdf/${docId}.pdf`
+    );
+};
+
+export const downloadWordAsStream = (
+    userId: string,
+    docId: string
+): stream => {
+    return downloadStreamFromS3(
+        BUCKET,
+        `${userId}/published/word/${docId}.docx`
     );
 };
 

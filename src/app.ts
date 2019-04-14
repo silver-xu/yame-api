@@ -9,13 +9,18 @@ import uuidv4 from 'uuid';
 import { resolvers } from './data/resolvers';
 import schema from './data/schema';
 import { renderDoc } from './services/doc-render-service';
-import { getDocForUser } from './services/doc-service';
+import {
+    downloadPdfAsStream,
+    downloadWordAsStream,
+    getDocForUser
+} from './services/doc-service';
 import {
     loginUser,
     obtainAppToken
 } from './services/facebook-service';
 import { UserType } from './types';
 import { registerUserProfile } from './utils/dynamo';
+import { downloadStreamFromS3 } from './utils/s3';
 import { normalizeStrForUrl } from './utils/string';
 
 const pandoc = require('pandoc-aws-lambda-binary');
@@ -140,6 +145,41 @@ export const createApp = async () => {
         );
 
         fs.createReadStream(`/tmp/${destFileName}`).pipe(res);
+    });
+
+    app.get('/download/pdf/:userId/:docId', async (req, res) => {
+        const { userId, docId } = req.params;
+        const doc = await getDocForUser(userId, docId);
+        if (doc.generatePdf) {
+            res.setHeader('Content-type', 'application/pdf');
+
+            res.setHeader(
+                'Content-Disposition',
+                `attachment; filename="${doc.docName}.pdf"`
+            );
+            downloadPdfAsStream(userId, docId).pipe(res);
+        } else {
+            res.sendStatus(401);
+        }
+    });
+
+    app.get('/download/word/:userId/:docId', async (req, res) => {
+        const { userId, docId } = req.params;
+        const doc = await getDocForUser(userId, docId);
+        if (doc.generatePdf) {
+            res.setHeader(
+                'Content-type',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            );
+
+            res.setHeader(
+                'Content-Disposition',
+                `attachment; filename="${doc.docName}.docx"`
+            );
+            downloadWordAsStream(userId, docId).pipe(res);
+        } else {
+            res.sendStatus(401);
+        }
     });
 
     server.applyMiddleware({ app });

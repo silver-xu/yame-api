@@ -77,3 +77,12 @@ export const deleteObjectFromS3 = (
         })
         .promise();
 };
+
+export const downloadStreamFromS3 = (
+    bucket: string,
+    key: string
+): stream => {
+    return s3
+        .getObject({ Bucket: bucket, Key: key })
+        .createReadStream();
+};
