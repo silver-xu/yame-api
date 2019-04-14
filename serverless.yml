@@ -57,11 +57,7 @@ functions:
                   method: get
                   contentHandling: CONVERT_TO_BINARY
             - http:
-                  path: ANY /
-                  method: get
-                  contentHandling: CONVERT_TO_TEXT
-            - http:
-                  path: 'ANY {proxy+}'
+                  path: /{proxy+}
                   method: get
                   contentHandling: CONVERT_TO_TEXT
 
