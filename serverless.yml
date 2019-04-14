@@ -51,6 +51,10 @@ functions:
                   path: convert/{proxy+}
                   method: get
                   contentHandling: CONVERT_TO_BINARY
+            - http:
+                  path: download/{proxy+}
+                  method: get
+                  contentHandling: CONVERT_TO_BINARY
             - http: ANY /
             - http: 'ANY {proxy+}'
         environment:
