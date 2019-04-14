@@ -125,6 +125,7 @@ export const createApp = async () => {
         const html = renderDoc(doc, css);
         const srcFileName = `${uuidv4()}.html`;
         const destFileName = `${uuidv4()}.docx`;
+
         await writeFileAsync(`/tmp/${srcFileName}`, html);
         await pandoc(`/tmp/${srcFileName}`, `/tmp/${destFileName}`);
 

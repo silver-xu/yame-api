@@ -18,8 +18,13 @@ import {
     deleteObjectFromS3,
     getObjectFromS3,
     listKeysFromS3,
-    putObjectToS3
+    putObjectToS3,
+    putStreamToS3
 } from '../utils/s3';
+import {
+    docToPdf as docToPdfStream,
+    docToWord as docToWordStream
+} from './doc-conversion-service';
 
 const BUCKET = process.env.BUCKET;
 
@@ -172,6 +177,20 @@ export const publishDoc = async (
         permalink,
         userId
     });
+
+    // publish PDF
+    putStreamToS3(
+        BUCKET,
+        `${userId}/published/pdf/${doc.id}.pdf`,
+        await docToPdfStream(doc)
+    );
+
+    // publish Word
+    putStreamToS3(
+        BUCKET,
+        `${userId}/published/word/${doc.id}.docx`,
+        await docToWordStream(doc)
+    );
 };
 
 const getDocByKey = async (key: string): Promise<IDoc> => {

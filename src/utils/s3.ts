@@ -4,6 +4,7 @@ import {
     PutObjectOutput
 } from 'aws-sdk/clients/s3';
 import { PromiseResult } from 'aws-sdk/lib/request';
+import stream = require('stream');
 const s3 = new AWS.S3();
 
 export const getObjectFromS3 = async <T>(
@@ -44,6 +45,20 @@ export const putObjectToS3 = (
     const body = JSON.stringify(obj);
     return s3
         .putObject({
+            Bucket: bucket,
+            Key: key,
+            Body: body
+        })
+        .promise();
+};
+
+export const putStreamToS3 = (
+    bucket: string,
+    key: string,
+    body: stream
+) => {
+    return s3
+        .upload({
             Bucket: bucket,
             Key: key,
             Body: body
