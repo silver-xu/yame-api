@@ -38,6 +38,11 @@ export interface IDocRepoMutation {
     deletedDocIds: string[];
 }
 
+export interface IPublishedDoc {
+    userId: string;
+    doc: IDoc;
+}
+
 // tslint:disable-next-line:no-empty-interface
 export interface IDocMutation extends IDoc {}
 

@@ -12,7 +12,8 @@ import { renderDoc } from './services/doc-render-service';
 import {
     downloadPdfAsStream,
     downloadWordAsStream,
-    getDocForUser
+    getDocForUser,
+    getPublishedDocByIds
 } from './services/doc-service';
 import {
     loginUser,
@@ -20,7 +21,6 @@ import {
 } from './services/facebook-service';
 import { UserType } from './types';
 import { registerUserProfile } from './utils/dynamo';
-import { downloadStreamFromS3 } from './utils/s3';
 import { normalizeStrForUrl } from './utils/string';
 
 const pandoc = require('pandoc-aws-lambda-binary');
@@ -149,7 +149,7 @@ export const createApp = async () => {
 
     app.get('/download/pdf/:userId/:docId', async (req, res) => {
         const { userId, docId } = req.params;
-        const doc = await getDocForUser(userId, docId);
+        const doc = await getPublishedDocByIds(userId, docId);
         if (doc.generatePdf) {
             res.setHeader('Content-type', 'application/pdf');
 
@@ -165,7 +165,7 @@ export const createApp = async () => {
 
     app.get('/download/word/:userId/:docId', async (req, res) => {
         const { userId, docId } = req.params;
-        const doc = await getDocForUser(userId, docId);
+        const doc = await getPublishedDocByIds(userId, docId);
         if (doc.generatePdf) {
             res.setHeader(
                 'Content-type',

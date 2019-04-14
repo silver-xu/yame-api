@@ -10,7 +10,7 @@ type Query {
   currentUser: User
   defaultDoc: DefaultDoc
   doc(docId:String): Doc  
-  publishedDoc(username: String, permalink: String): Doc
+  publishedDoc(username: String, permalink: String): PublishedDoc  
 }
 
 type Mutation {
@@ -21,12 +21,16 @@ type Mutation {
 
 type DocRepo {
   docs: [Doc]
-  publishedDocIds: [String]
 }
 
 type DefaultDoc{
   namePrefix: String
   defaultContent: String
+}
+
+type PublishedDoc{
+  userId: String,
+  doc: Doc
 }
 
 type Doc {

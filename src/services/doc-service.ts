@@ -4,7 +4,8 @@ import {
     IDoc,
     IDocPermalink,
     IDocRepo,
-    IDocRepoMutation
+    IDocRepoMutation,
+    IPublishedDoc
 } from '../types';
 import {
     createDocPermalinkIfNotExists,
@@ -14,19 +15,19 @@ import {
 
 export { registerUserProfile } from '../utils/dynamo';
 
+import stream = require('stream');
 import {
     deleteObjectFromS3,
+    downloadStreamFromS3,
     getObjectFromS3,
     listKeysFromS3,
     putObjectToS3,
-    putStreamToS3,
-    downloadStreamFromS3
+    putStreamToS3
 } from '../utils/s3';
 import {
     docToPdf as docToPdfStream,
     docToWord as docToWordStream
 } from './doc-conversion-service';
-import stream = require('stream');
 
 const BUCKET = process.env.BUCKET;
 
@@ -43,10 +44,6 @@ export const getDocRepoForUser = async (
     id: string
 ): Promise<IDocRepo> => {
     let docKeys = await listKeysFromS3(BUCKET, `${id}/docs/`);
-    const publishedDocKeys = await listKeysFromS3(
-        BUCKET,
-        `${id}/published/`
-    );
 
     // initialize Docs for new user
     if (!docKeys || docKeys.length === 0) {
@@ -73,18 +70,8 @@ export const getDocRepoForUser = async (
         docKeys.map(key => getDocByKey(key))
     );
 
-    const publishedDocs = await Promise.all(
-        publishedDocKeys.map(key => getDocByKey(key))
-    );
-
     docs.map(doc => {
         doc.published = false;
-    });
-
-    docs.filter(doc =>
-        publishedDocs.find(publishedDoc => doc.id === publishedDoc.id)
-    ).forEach(doc => {
-        doc.published = true;
     });
 
     return {
@@ -131,7 +118,7 @@ export const getDocPermalink = async (
 export const getPublishedDoc = async (
     username: string,
     permalink: string
-) => {
+): Promise<IPublishedDoc> => {
     const userProfile = await getUserProfileByName(username);
 
     const docPermalink = await getDocPermalinkByPermalink(
@@ -139,11 +126,24 @@ export const getPublishedDoc = async (
         permalink
     );
 
-    console.log({ id: userProfile.id, permalink });
+    return {
+        userId: userProfile.id,
+        doc: await getDocByKey(
+            `${userProfile.id}/published/${docPermalink.id}.json`
+        )
+    };
+};
 
-    return await getDocByKey(
-        `${userProfile.id}/published/${docPermalink.id}.json`
+export const getPublishedDocByIds = async (
+    id: string,
+    docId: string
+): Promise<IDoc> => {
+    const doc = await getObjectFromS3<IDoc>(
+        BUCKET,
+        `${id}/published/${docId}.json`
     );
+
+    return doc;
 };
 
 export const isPermalinkDuplicate = async (
