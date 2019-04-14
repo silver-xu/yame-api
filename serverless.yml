@@ -17,6 +17,7 @@ custom:
     apigwBinary:
         types:
             - 'application/pdf'
+            - 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
 provider:
     name: aws
     runtime: nodejs8.10
@@ -51,8 +52,15 @@ functions:
                   path: convert/{proxy+}
                   method: get
                   contentHandling: CONVERT_TO_BINARY
-            - http: ANY /
-            - http: 'ANY {proxy+}'
+            - http:
+                  path: download/{proxy+}
+                  method: get
+                  contentHandling: CONVERT_TO_BINARY
+            - http:
+                  path: /{proxy+}
+                  method: ANY
+                  cors: true
+                  contentHandling: CONVERT_TO_TEXT
         environment:
             FB_APP_ID: ${env:FB_APP_ID}
             FB_APP_SECRET: ${env:FB_APP_SECRET}
