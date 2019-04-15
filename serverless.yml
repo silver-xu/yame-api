@@ -58,7 +58,6 @@ functions:
                   contentHandling: CONVERT_TO_BINARY
             - http:
                   path: /{proxy+}
-                  method: get
                   contentHandling: CONVERT_TO_TEXT
 
         environment:
