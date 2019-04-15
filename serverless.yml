@@ -59,7 +59,7 @@ functions:
                   contentHandling: CONVERT_TO_BINARY
                   cors: true
             - http:
-                  path: /{proxy+}
+                  path: /{any+}
                   method: ANY
                   contentHandling: CONVERT_TO_TEXT
                   cors: true
