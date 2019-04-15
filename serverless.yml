@@ -62,7 +62,6 @@ functions:
                   path: graphql
                   method: ANY
                   cors: true
-                  contentHandling: CONVERT_TO_TEXT
             - http:
                   path: /{proxy+}
                   method: ANY
