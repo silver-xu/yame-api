@@ -59,7 +59,7 @@ functions:
                   contentHandling: CONVERT_TO_BINARY
                   cors: true
             - http:
-                  path: /graphql
+                  path: graphql
                   method: get
                   contentHandling: CONVERT_TO_TEXT
                   cors: true
