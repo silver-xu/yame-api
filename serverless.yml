@@ -51,16 +51,22 @@ functions:
             - http:
                   path: convert/{proxy+}
                   method: get
+                  cors: true
                   contentHandling: CONVERT_TO_BINARY
             - http:
                   path: download/{proxy+}
                   method: get
+                  cors: true
                   contentHandling: CONVERT_TO_BINARY
+            - http:
+                  path: graphql
+                  method: ANY
+                  cors: true
+                  contentHandling: CONVERT_TO_TEXT
             - http:
                   path: /{proxy+}
                   method: ANY
                   cors: true
-                  contentHandling: CONVERT_TO_TEXT
         environment:
             FB_APP_ID: ${env:FB_APP_ID}
             FB_APP_SECRET: ${env:FB_APP_SECRET}
