@@ -18,6 +18,7 @@ custom:
         types:
             - 'application/pdf'
             - 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            - ''
 provider:
     name: aws
     runtime: nodejs8.10
@@ -51,16 +52,18 @@ functions:
             - http:
                   path: convert/{proxy+}
                   method: get
+                  cors: true
                   contentHandling: CONVERT_TO_BINARY
             - http:
                   path: download/{proxy+}
                   method: get
+                  cors: true
                   contentHandling: CONVERT_TO_BINARY
             - http:
-                  path: graphql
-                  method: post
+                  path: /{proxy+}
+                  method: ANY
+                  cors: true
                   contentHandling: CONVERT_TO_TEXT
-
         environment:
             FB_APP_ID: ${env:FB_APP_ID}
             FB_APP_SECRET: ${env:FB_APP_SECRET}

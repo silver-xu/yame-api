@@ -27,6 +27,7 @@ const pandoc = require('pandoc-aws-lambda-binary');
 
 export const createApp = async () => {
     const app = express();
+
     app.use(cors());
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: true }));
