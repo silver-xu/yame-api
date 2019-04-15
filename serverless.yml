@@ -57,7 +57,7 @@ functions:
                   method: get
                   contentHandling: CONVERT_TO_BINARY
             - http:
-                  path: convert/{proxy+}
+                  path: graphql/{proxy+}
                   method: post
                   contentHandling: CONVERT_TO_TEXT
             - http: 'ANY {proxy+}'
