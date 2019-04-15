@@ -60,7 +60,7 @@ functions:
                   cors: true
             - http:
                   path: graphql
-                  method: get
+                  method: post
                   contentHandling: CONVERT_TO_TEXT
                   cors: true
             - http:
