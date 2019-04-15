@@ -1,7 +1,8 @@
 service: yame-api
 
 custom:
-    bucket: yame-dev
+    localbucket: yame-local
+    devbucket: yame-dev
     customDomain:
         domainName: ${self:custom.domainNames.${self:provider.stage}}
         certificateName: ${self:custom.certificateNames.${self:provider.stage}}
@@ -35,11 +36,19 @@ provider:
         - Effect: Allow
           Action:
               - s3:*
-          Resource: 'arn:aws:s3:::${self:custom.bucket}/*'
+          Resource: 'arn:aws:s3:::${self:custom.localbucket}/*'
         - Effect: Allow
           Action:
               - s3:*
-          Resource: 'arn:aws:s3:::${self:custom.bucket}'
+          Resource: 'arn:aws:s3:::${self:custom.localbucket}'
+        - Effect: Allow
+          Action:
+              - s3:*
+          Resource: 'arn:aws:s3:::${self:custom.devbucket}/*'
+        - Effect: Allow
+          Action:
+              - s3:*
+          Resource: 'arn:aws:s3:::${self:custom.devbucket}'
         - Effect: Allow
           Action:
               - logs:*
@@ -80,7 +89,7 @@ package:
 
 resources:
     Resources:
-        DocPermalinksTable:
+        DocPermalinksTableLocal:
             Type: 'AWS::DynamoDB::Table'
             Properties:
                 AttributeDefinitions:
@@ -96,7 +105,7 @@ resources:
                 ProvisionedThroughput:
                     ReadCapacityUnits: 1
                     WriteCapacityUnits: 1
-                TableName: DocPermalinks
+                TableName: DocPermalinks-local
                 GlobalSecondaryIndexes:
                     - IndexName: userIdPermalinkIndex
                       KeySchema:
@@ -109,7 +118,36 @@ resources:
                       ProvisionedThroughput:
                           ReadCapacityUnits: 1
                           WriteCapacityUnits: 1
-        UserProfileTable:
+        DocPermalinksTableDev:
+            Type: 'AWS::DynamoDB::Table'
+            Properties:
+                AttributeDefinitions:
+                    - AttributeName: id
+                      AttributeType: S
+                    - AttributeName: permalink
+                      AttributeType: S
+                    - AttributeName: userId
+                      AttributeType: S
+                KeySchema:
+                    - AttributeName: id
+                      KeyType: HASH
+                ProvisionedThroughput:
+                    ReadCapacityUnits: 1
+                    WriteCapacityUnits: 1
+                TableName: DocPermalinks-dev
+                GlobalSecondaryIndexes:
+                    - IndexName: userIdPermalinkIndex
+                      KeySchema:
+                          - AttributeName: userId
+                            KeyType: HASH
+                          - AttributeName: permalink
+                            KeyType: RANGE
+                      Projection:
+                          ProjectionType: ALL
+                      ProvisionedThroughput:
+                          ReadCapacityUnits: 1
+                          WriteCapacityUnits: 1
+        UserProfileTableLocal:
             Type: 'AWS::DynamoDB::Table'
             Properties:
                 AttributeDefinitions:
@@ -123,7 +161,32 @@ resources:
                 ProvisionedThroughput:
                     ReadCapacityUnits: 1
                     WriteCapacityUnits: 1
-                TableName: UserProfile
+                TableName: UserProfile-local
+                GlobalSecondaryIndexes:
+                    - IndexName: nameIndex
+                      KeySchema:
+                          - AttributeName: username
+                            KeyType: HASH
+                      Projection:
+                          ProjectionType: ALL
+                      ProvisionedThroughput:
+                          ReadCapacityUnits: 1
+                          WriteCapacityUnits: 1
+        UserProfileTableDev:
+            Type: 'AWS::DynamoDB::Table'
+            Properties:
+                AttributeDefinitions:
+                    - AttributeName: id
+                      AttributeType: S
+                    - AttributeName: username
+                      AttributeType: S
+                KeySchema:
+                    - AttributeName: id
+                      KeyType: HASH
+                ProvisionedThroughput:
+                    ReadCapacityUnits: 1
+                    WriteCapacityUnits: 1
+                TableName: UserProfile-dev
                 GlobalSecondaryIndexes:
                     - IndexName: nameIndex
                       KeySchema:

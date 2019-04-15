@@ -1,12 +1,15 @@
 import AWS from 'aws-sdk';
 import { IDocPermalink, IUserProfile } from '../types';
 
+const STAGE = process.env.STAGE || '';
+
 const dynamoDb = new AWS.DynamoDB.DocumentClient({
     region: 'ap-southeast-2'
 });
 
-const DOCUMENT_PERMALINKS_TABLE = 'DocPermalinks';
-const USER_PROFILE_TABLE = 'UserProfile';
+const DOCUMENT_PERMALINKS_TABLE =
+    process.env.DOC_PERMALINKS_TABLE || '';
+const USER_PROFILE_TABLE = process.env.USER_PROFILE_TABLE || '';
 
 export const putObjectToDynamo = async (
     object: any,
@@ -69,7 +72,6 @@ export const getDocPermalinkByPermalink = async (
     };
 
     const result = await dynamoDb.query(dynamoParams).promise();
-    console.log(result);
     return (
         result.Items &&
         result.Items.length > 0 &&

@@ -1,12 +1,16 @@
 STAGE ?= local
 FB_APP_ID ?= 330164834292470
 FB_APP_SECRET ?= 42949536913299795249c3404d0e1c5a
-BUCKET ?= yame-dev
+BUCKET ?= yame-${STAGE}
+DOC_PERMALINKS_TABLE ?= DocPermalinks-${STAGE}
+USER_PROFILE_TABLE ?= UserProfile-${STAGE}
 
 export FB_APP_ID
 export FB_APP_SECRET
 export STAGE
 export BUCKET
+export DOC_PERMALINKS_TABLE
+export USER_PROFILE_TABLE
 
 start: modules
 	export STAGE=local && npm start
