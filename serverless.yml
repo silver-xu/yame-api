@@ -58,7 +58,7 @@ functions:
                   contentHandling: CONVERT_TO_BINARY
             - http:
                   path: graphql/{proxy+}
-                  method: post
+                  method: ANY
                   contentHandling: CONVERT_TO_TEXT
             - http: 'ANY {proxy+}'
         environment:
