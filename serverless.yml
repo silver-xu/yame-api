@@ -56,7 +56,10 @@ functions:
                   path: download/{proxy+}
                   method: get
                   contentHandling: CONVERT_TO_BINARY
-            - http: ANY /
+            - http:
+                  path: convert/{proxy+}
+                  method: post
+                  contentHandling: CONVERT_TO_TEXT
             - http: 'ANY {proxy+}'
         environment:
             FB_APP_ID: ${env:FB_APP_ID}
