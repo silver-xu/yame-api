@@ -56,8 +56,11 @@ functions:
                   path: download/{proxy+}
                   method: get
                   contentHandling: CONVERT_TO_BINARY
-            - http: ANY
-            - http: 'ANY {proxy+}'
+            - http:
+                  path: graphql
+                  method: post
+                  contentHandling: CONVERT_TO_TEXT
+
         environment:
             FB_APP_ID: ${env:FB_APP_ID}
             FB_APP_SECRET: ${env:FB_APP_SECRET}
