@@ -59,13 +59,8 @@ functions:
                   contentHandling: CONVERT_TO_BINARY
                   cors: true
             - http:
-                  path: graphql
-                  method: post
-                  contentHandling: CONVERT_TO_TEXT
-                  cors: true
-            - http:
                   path: /{proxy+}
-                  method: get
+                  method: ANY
                   contentHandling: CONVERT_TO_TEXT
                   cors: true
 
