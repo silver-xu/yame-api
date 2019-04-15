@@ -52,18 +52,12 @@ functions:
                   path: convert/{proxy+}
                   method: get
                   contentHandling: CONVERT_TO_BINARY
-                  cors: true
             - http:
                   path: download/{proxy+}
                   method: get
                   contentHandling: CONVERT_TO_BINARY
-                  cors: true
-            - http:
-                  path: /{any+}
-                  method: ANY
-                  contentHandling: CONVERT_TO_TEXT
-                  cors: true
-
+            - http: ANY /
+            - http: 'ANY {proxy+}'
         environment:
             FB_APP_ID: ${env:FB_APP_ID}
             FB_APP_SECRET: ${env:FB_APP_SECRET}
