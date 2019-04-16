@@ -77,6 +77,8 @@ functions:
             FB_APP_ID: ${env:FB_APP_ID}
             FB_APP_SECRET: ${env:FB_APP_SECRET}
             BUCKET: ${env:BUCKET}
+            DOC_PERMALINKS_TABLE: ${env:DOC_PERMALINKS_TABLE}
+            USER_PROFILE_TABLE: ${env:USER_PROFILE_TABLE}
 plugins:
     - serverless-offline
     - serverless-domain-manager
