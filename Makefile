@@ -45,3 +45,6 @@ offline: build
 deploy: build
 	npm run deploy
 
+domain:
+  npm run domain
+

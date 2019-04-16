@@ -15,8 +15,8 @@
         "pretty": "prettier --write",
         "lint": "tslint -p tsconfig.json -c tslint.json && npm run format",
         "lint:fix": "tslint --fix -p tsconfig.json -c tslint.json && npm run format",
-        "deploy": "STAGE=dev && sls deploy --stage ${dev}",
-        "domain": "STAGE=dev && sls create_domain --stage ${dev}",
+        "deploy": "STAGE=dev && sls deploy --stage dev",
+        "domain": "STAGE=dev && sls create_domain --stage dev",
         "offline": "STAGE=local && sls offline start --port 3001 --stage ${STAGE}"
     },
     "keywords": [],
