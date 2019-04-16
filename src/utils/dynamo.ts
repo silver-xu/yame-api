@@ -1,14 +1,11 @@
 import AWS from 'aws-sdk';
 import { IDocPermalink, IUserProfile } from '../types';
 
-const STAGE = process.env.STAGE || '';
-
 const dynamoDb = new AWS.DynamoDB.DocumentClient({
     region: 'ap-southeast-2'
 });
 
-const DOCUMENT_PERMALINKS_TABLE =
-    process.env.DOC_PERMALINKS_TABLE || '';
+const DOC_PERMALINKS_TABLE = process.env.DOC_PERMALINKS_TABLE || '';
 const USER_PROFILE_TABLE = process.env.USER_PROFILE_TABLE || '';
 
 export const putObjectToDynamo = async (
@@ -26,14 +23,14 @@ export const putObjectToDynamo = async (
 export const updateDocPermalink = async (
     docPermalink: IDocPermalink
 ) => {
-    await putObjectToDynamo(docPermalink, DOCUMENT_PERMALINKS_TABLE);
+    await putObjectToDynamo(docPermalink, DOC_PERMALINKS_TABLE);
 };
 
 export const getDocPermalink = async (
     id: string
 ): Promise<IDocPermalink | null> => {
     const dynamoParams = {
-        TableName: DOCUMENT_PERMALINKS_TABLE,
+        TableName: DOC_PERMALINKS_TABLE,
         ProjectionExpression: 'id, userId, permalink',
         KeyConditionExpression: 'id = :did',
         ExpressionAttributeValues: {
@@ -60,7 +57,7 @@ export const getDocPermalinkByPermalink = async (
     permalink: string
 ): Promise<IDocPermalink> => {
     const dynamoParams = {
-        TableName: DOCUMENT_PERMALINKS_TABLE,
+        TableName: DOC_PERMALINKS_TABLE,
         IndexName: 'userIdPermalinkIndex',
         ProjectionExpression: 'id, userId, permalink',
         KeyConditionExpression:
