@@ -158,6 +158,9 @@ export const createApp = async () => {
                 'Content-Disposition',
                 `attachment; filename="${doc.docName}.pdf"`
             );
+
+            res.setHeader('isBase64Encoded', 'true');
+
             downloadPdfAsStream(userId, docId).pipe(res);
         } else {
             res.sendStatus(401);
