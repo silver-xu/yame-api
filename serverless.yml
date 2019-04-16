@@ -79,7 +79,7 @@ functions:
             BUCKET: ${env:BUCKET}
             DOC_PERMALINKS_TABLE: ${env:DOC_PERMALINKS_TABLE}
             USER_PROFILE_TABLE: ${env:USER_PROFILE_TABLE}
-            STAGE: ${env:STAGE}
+            STAGE: ${self:provider.stage}
 plugins:
     - serverless-offline
     - serverless-domain-manager
