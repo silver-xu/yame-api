@@ -10,16 +10,11 @@ custom:
         stage: ${self:provider.stage}
         createRoute53Record: true
     domainNames:
-        dev: api.dev.yame.io
-        prod: api.yame.io
+        dev: graphql.dev.yame.io
+        prod: graphql.yame.io
     certificateNames:
         dev: '*.dev.yame.io'
         prod: '*.yame.io'
-    apigwBinary:
-        types:
-            - 'application/pdf'
-            - 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-            - 'application/octet-stream'
 provider:
     name: aws
     runtime: nodejs8.10
@@ -83,8 +78,6 @@ functions:
 plugins:
     - serverless-offline
     - serverless-domain-manager
-    - serverless-apigw-binary
-    - serverless-apigwy-binary
 
 package:
     exclude:

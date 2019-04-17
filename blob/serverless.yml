@@ -1,0 +1,84 @@
+service: yame-api
+
+custom:
+    localbucket: yame-local
+    devbucket: yame-dev
+    customDomain:
+        domainName: ${self:custom.domainNames.${self:provider.stage}}
+        certificateName: ${self:custom.certificateNames.${self:provider.stage}}
+        basePath: ''
+        stage: ${self:provider.stage}
+        createRoute53Record: true
+    domainNames:
+        dev: blob.dev.yame.io
+        prod: blob.yame.io
+    certificateNames:
+        dev: '*.dev.yame.io'
+        prod: '*.yame.io'
+    apigwBinary:
+        types:
+            - '*/*'
+provider:
+    name: aws
+    runtime: nodejs8.10
+    stage: ${opt:stage}
+    region: ap-southeast-2
+    iamRoleStatements:
+        - Effect: Allow
+          Action:
+              - dynamodb:GetItem
+              - dynamodb:Query
+              - dynamodb:UpdateItem
+              - dynamodb:PutItem
+          Resource: 'arn:aws:dynamodb:${self:provider.region, self:provider.region}:*:table/*'
+        - Effect: Allow
+          Action:
+              - s3:*
+          Resource: 'arn:aws:s3:::${self:custom.localbucket}/*'
+        - Effect: Allow
+          Action:
+              - s3:*
+          Resource: 'arn:aws:s3:::${self:custom.localbucket}'
+        - Effect: Allow
+          Action:
+              - s3:*
+          Resource: 'arn:aws:s3:::${self:custom.devbucket}/*'
+        - Effect: Allow
+          Action:
+              - s3:*
+          Resource: 'arn:aws:s3:::${self:custom.devbucket}'
+        - Effect: Allow
+          Action:
+              - logs:*
+          Resource: '*'
+
+functions:
+    app:
+        handler: ../dist/handler.handler
+        events:
+            - http:
+                  path: convert/{proxy+}
+                  method: get
+                  cors: true
+                  contentHandling: CONVERT_TO_BINARY
+            - http:
+                  path: download/{proxy+}
+                  method: get
+                  cors: true
+                  contentHandling: CONVERT_TO_BINARY
+        environment:
+            FB_APP_ID: ${env:FB_APP_ID}
+            FB_APP_SECRET: ${env:FB_APP_SECRET}
+            BUCKET: ${env:BUCKET}
+            DOC_PERMALINKS_TABLE: ${env:DOC_PERMALINKS_TABLE}
+            USER_PROFILE_TABLE: ${env:USER_PROFILE_TABLE}
+            STAGE: ${self:provider.stage}
+plugins:
+    - serverless-offline
+    - serverless-domain-manager
+    - serverless-apigw-binary
+    - serverless-apigwy-binary
+
+package:
+    exclude:
+        - ../src/**
