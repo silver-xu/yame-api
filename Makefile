@@ -25,7 +25,14 @@ build: modules
 	npm run build
 
 pack: build
-	npm run pack
+	rm -rf pack; \
+	npm run pack; \
+	mkdir pack/node_modules; \
+	cp node_modules/html-pdf pack/node_modules/html-pdf -r; \
+	cp node_modules/es6-promise pack/node_modules/es6-promise -r;
+
+pilotpack:
+	node pack/handler.js
 
 dockerbuild:
 	docker build -t yame-api .
@@ -51,6 +58,7 @@ deploy: pack
 deployblob: pack
 	rm -rf blob/pack;  \
 	cp pack blob/pack -r; \
+	cp node_modules/html-pdf pack/node_modules/html-pdf -r; \
 	cd blob; \
 	sls deploy --stage dev
 
