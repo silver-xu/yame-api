@@ -55,10 +55,8 @@ deployblob: pack
 	sls deploy --stage dev
 
 deployall: deploy
-	rm -rf blob/dist; \
-	rm -rf blob/css; \
-	cp dist blob/dist -r; \
-	cp dist blob/css -r; \
+	rm -rf blob/pack;  \
+	cp pack blob/pack -r; \
 	cd blob; \
 	sls deploy --stage dev
 
