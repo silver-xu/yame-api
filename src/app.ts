@@ -114,7 +114,7 @@ export const createApp = async () => {
             footer: {
                 height: '20px',
                 contents: `<span class="footer">${doc.docName}
-                }</span>`
+                </span>`
             }
         }).toStream((err, stream) => {
             if (err) {
