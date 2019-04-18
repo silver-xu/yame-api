@@ -16,4 +16,4 @@ jobs:
     include:
         - stage: dev deploy
           script:
-              - make deployall
+              - make deployall STAGE=dev

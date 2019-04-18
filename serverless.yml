@@ -76,7 +76,7 @@ package:
         - node_modules/**
         - blob/**
         - ./*
-    include:	
+    include:
         - pack/handler.js
 
 resources:
