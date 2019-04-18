@@ -31,7 +31,7 @@ export const docToPdf = async (doc: IDoc): Promise<fs.ReadStream> => {
             footer: {
                 height: '20px',
                 contents: `<span class="footer">${doc.docName}
-        }</span>`
+        </span>`
             }
         }).toStream((err, result) => {
             if (err) {
