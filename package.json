@@ -7,6 +7,7 @@
         "start": "node --nolazy -r ts-node/register src/index.ts",
         "start:watch": "nodemon --inspect",
         "build": "tsc",
+        "pack": "./node_modules/.bin/webpack",
         "format": "prettier --write '**/*.{ts,json,yml,yaml}'",
         "format:check": "prettier --list-different '**/*.{ts,json,yml,yaml}'",
         "test": "jest",
@@ -36,7 +37,6 @@
         "@types/markdown-pdf": "^9.0.0",
         "@types/node-fetch": "^2.1.6",
         "@types/promisify-node": "^0.4.0",
-        "@types/puppeteer": "^1.12.3",
         "@types/utf8": "^2.1.6",
         "apollo-server": "^2.4.6",
         "apollo-server-express": "^2.4.6",
@@ -46,7 +46,6 @@
         "aws-serverless-express": "^3.3.5",
         "body-parser": "^1.18.3",
         "btoa": "^1.2.1",
-        "concat-stream": "^2.0.0",
         "cors": "^2.8.5",
         "express": "^4.16.2",
         "fetch": "^1.1.0",
@@ -76,12 +75,16 @@
         "serverless-apigwy-binary": "^1.0.0",
         "serverless-domain-manager": "^3.1.0",
         "serverless-offline": "^4.9.1",
+        "serverless-optimizer-plugin": "^2.5.1",
+        "serverless-plugin-optimize": "^4.0.2-rc.1",
         "ts-jest": "23.10.5",
         "ts-node": "8.0.2",
         "tslint": "^5.12.1",
         "tslint-config-prettier": "^1.18.0",
         "tslint-eslint-rules": "^5.4.0",
-        "typescript": "^3.3.3"
+        "typescript": "^3.3.3",
+        "webpack": "^4.30.0",
+        "webpack-cli": "^3.3.0"
     },
     "husky": {
         "hooks": {

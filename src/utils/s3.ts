@@ -7,6 +7,19 @@ import { PromiseResult } from 'aws-sdk/lib/request';
 import stream = require('stream');
 const s3 = new AWS.S3();
 
+export const getStringFromS3 = async (
+    bucket: string,
+    key: string
+): Promise<string> => {
+    const response = await s3
+        .getObject({
+            Bucket: bucket,
+            Key: key
+        })
+        .promise();
+    return response.Body.toString('utf-8');
+};
+
 export const getObjectFromS3 = async <T>(
     bucket: string,
     key: string

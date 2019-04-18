@@ -22,6 +22,7 @@ import {
 import { UserType } from './types';
 import { registerUserProfile } from './utils/dynamo';
 import { normalizeStrForUrl } from './utils/string';
+import { getCss } from './services/doc-conversion-service';
 
 const pandoc = require('pandoc-aws-lambda-binary');
 
@@ -35,7 +36,6 @@ export const createApp = async () => {
 
     const readFileAsync = util.promisify(fs.readFile);
     const writeFileAsync = util.promisify(fs.writeFile);
-    const css = await readFileAsync('./css/document.css', 'utf-8');
 
     const fbAppAccessToken = await obtainAppToken();
 
@@ -93,7 +93,7 @@ export const createApp = async () => {
         const { userId, docId } = req.params;
         const doc = await getDocForUser(userId, docId);
 
-        const html = renderDoc(doc, css);
+        const html = renderDoc(doc, await getCss());
         res.send(html);
     });
 
@@ -101,7 +101,7 @@ export const createApp = async () => {
         const { userId, docId } = req.params;
         const doc = await getDocForUser(userId, docId);
 
-        const html = renderDoc(doc, css);
+        const html = renderDoc(doc, await getCss());
         res.setHeader('Content-type', 'application/pdf');
 
         res.setHeader(
@@ -128,7 +128,7 @@ export const createApp = async () => {
         const { userId, docId } = req.params;
         const doc = await getDocForUser(userId, docId);
 
-        const html = renderDoc(doc, css);
+        const html = renderDoc(doc, await getCss());
         const srcFileName = `${uuidv4()}.html`;
         const destFileName = `${uuidv4()}.docx`;
 

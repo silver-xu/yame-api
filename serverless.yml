@@ -51,18 +51,8 @@ provider:
 
 functions:
     app:
-        handler: dist/handler.handler
+        handler: pack/handler.handler
         events:
-            - http:
-                  path: convert/{proxy+}
-                  method: get
-                  cors: true
-                  contentHandling: CONVERT_TO_BINARY
-            - http:
-                  path: download/{proxy+}
-                  method: get
-                  cors: true
-                  contentHandling: CONVERT_TO_BINARY
             - http:
                   path: /{proxy+}
                   method: ANY
@@ -78,10 +68,16 @@ functions:
 plugins:
     - serverless-offline
     - serverless-domain-manager
-
 package:
     exclude:
         - src/**
+        - dist/**
+        - fonts/**
+        - node_modules/**
+        - blob/**
+        - ./*
+    include:	
+        - pack/handler.js
 
 resources:
     Resources:

@@ -1,4 +1,4 @@
-service: yame-api
+service: yame-blob-api
 
 custom:
     localbucket: yame-local
@@ -54,7 +54,7 @@ provider:
 
 functions:
     app:
-        handler: ../dist/handler.handler
+        handler: pack/handler.handler
         events:
             - http:
                   path: convert/{proxy+}
@@ -78,7 +78,6 @@ plugins:
     - serverless-domain-manager
     - serverless-apigw-binary
     - serverless-apigwy-binary
-
 package:
-    exclude:
-        - ../src/**
+    include:
+        - pack/**

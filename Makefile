@@ -24,6 +24,9 @@ modules:
 build: modules
 	npm run build
 
+pack: build
+	npm run pack
+
 dockerbuild:
 	docker build -t yame-api .
 
@@ -42,10 +45,26 @@ fix: modules
 offline: build
 	npm run offline
 
-deploy: build
+deploy: pack
 	npm run deploy
 
-domain: 
+deployblob: pack
+	rm -rf blob/pack;  \
+	cp pack blob/pack -r; \
+	cd blob; \
+	sls deploy --stage dev
+
+deployall: deploy
+	rm -rf blob/dist; \
+	rm -rf blob/css; \
+	cp dist blob/dist -r; \
+	cp dist blob/css -r; \
+	cd blob; \
+	sls deploy --stage dev
+
+domain:
 	npm run domain
 
-
+blobdomain:
+	cd blob; \
+	sls create_domain --stage dev
