@@ -52,7 +52,7 @@
         "graphql": "^14.1.1",
         "graphql-iso-date": "^3.6.1",
         "graphql-tools": "^2.13.0",
-        "highlight.js": "^9.15.6",
+        "highlight.js": "^10.4.1",
         "html-pdf": "^2.2.0",
         "markdown-it": "^8.4.2",
         "markdown-it-named-headings": "^1.1.0",
